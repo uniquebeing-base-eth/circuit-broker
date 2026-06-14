@@ -10,33 +10,76 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiPublicAgentsSocialRouteImport } from './routes/api/public/agents/social'
+import { Route as ApiPublicAgentsLogoRouteImport } from './routes/api/public/agents/logo'
+import { Route as ApiPublicAgentsImageRouteImport } from './routes/api/public/agents/image'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicAgentsSocialRoute = ApiPublicAgentsSocialRouteImport.update({
+  id: '/api/public/agents/social',
+  path: '/api/public/agents/social',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicAgentsLogoRoute = ApiPublicAgentsLogoRouteImport.update({
+  id: '/api/public/agents/logo',
+  path: '/api/public/agents/logo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicAgentsImageRoute = ApiPublicAgentsImageRouteImport.update({
+  id: '/api/public/agents/image',
+  path: '/api/public/agents/image',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api/public/agents/image': typeof ApiPublicAgentsImageRoute
+  '/api/public/agents/logo': typeof ApiPublicAgentsLogoRoute
+  '/api/public/agents/social': typeof ApiPublicAgentsSocialRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api/public/agents/image': typeof ApiPublicAgentsImageRoute
+  '/api/public/agents/logo': typeof ApiPublicAgentsLogoRoute
+  '/api/public/agents/social': typeof ApiPublicAgentsSocialRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/api/public/agents/image': typeof ApiPublicAgentsImageRoute
+  '/api/public/agents/logo': typeof ApiPublicAgentsLogoRoute
+  '/api/public/agents/social': typeof ApiPublicAgentsSocialRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/api/public/agents/image'
+    | '/api/public/agents/logo'
+    | '/api/public/agents/social'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/api/public/agents/image'
+    | '/api/public/agents/logo'
+    | '/api/public/agents/social'
+  id:
+    | '__root__'
+    | '/'
+    | '/api/public/agents/image'
+    | '/api/public/agents/logo'
+    | '/api/public/agents/social'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApiPublicAgentsImageRoute: typeof ApiPublicAgentsImageRoute
+  ApiPublicAgentsLogoRoute: typeof ApiPublicAgentsLogoRoute
+  ApiPublicAgentsSocialRoute: typeof ApiPublicAgentsSocialRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +91,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/agents/social': {
+      id: '/api/public/agents/social'
+      path: '/api/public/agents/social'
+      fullPath: '/api/public/agents/social'
+      preLoaderRoute: typeof ApiPublicAgentsSocialRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/agents/logo': {
+      id: '/api/public/agents/logo'
+      path: '/api/public/agents/logo'
+      fullPath: '/api/public/agents/logo'
+      preLoaderRoute: typeof ApiPublicAgentsLogoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/agents/image': {
+      id: '/api/public/agents/image'
+      path: '/api/public/agents/image'
+      fullPath: '/api/public/agents/image'
+      preLoaderRoute: typeof ApiPublicAgentsImageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApiPublicAgentsImageRoute: ApiPublicAgentsImageRoute,
+  ApiPublicAgentsLogoRoute: ApiPublicAgentsLogoRoute,
+  ApiPublicAgentsSocialRoute: ApiPublicAgentsSocialRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
