@@ -14,7 +14,154 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      agent_registry: {
+        Row: {
+          active: boolean
+          avg_delivery_ms: number
+          category: Database["public"]["Enums"]["service_category"]
+          created_at: string
+          description: string
+          endpoint: string
+          id: string
+          name: string
+          price_cusd: number
+          reputation: number
+          wallet_address: string
+        }
+        Insert: {
+          active?: boolean
+          avg_delivery_ms?: number
+          category: Database["public"]["Enums"]["service_category"]
+          created_at?: string
+          description: string
+          endpoint: string
+          id?: string
+          name: string
+          price_cusd: number
+          reputation?: number
+          wallet_address: string
+        }
+        Update: {
+          active?: boolean
+          avg_delivery_ms?: number
+          category?: Database["public"]["Enums"]["service_category"]
+          created_at?: string
+          description?: string
+          endpoint?: string
+          id?: string
+          name?: string
+          price_cusd?: number
+          reputation?: number
+          wallet_address?: string
+        }
+        Relationships: []
+      }
+      jobs: {
+        Row: {
+          budget_cusd: number
+          category: Database["public"]["Enums"]["service_category"]
+          circuit_fee_cusd: number | null
+          created_at: string
+          error: string | null
+          id: string
+          prompt: string
+          provider_pay_amount_cusd: number | null
+          provider_tx_hash: string | null
+          result_text: string | null
+          result_url: string | null
+          selected_agent_id: string | null
+          status: Database["public"]["Enums"]["job_status"]
+          updated_at: string
+          user_pay_amount_cusd: number
+          user_tx_hash: string | null
+          user_wallet: string
+        }
+        Insert: {
+          budget_cusd: number
+          category: Database["public"]["Enums"]["service_category"]
+          circuit_fee_cusd?: number | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          prompt: string
+          provider_pay_amount_cusd?: number | null
+          provider_tx_hash?: string | null
+          result_text?: string | null
+          result_url?: string | null
+          selected_agent_id?: string | null
+          status?: Database["public"]["Enums"]["job_status"]
+          updated_at?: string
+          user_pay_amount_cusd: number
+          user_tx_hash?: string | null
+          user_wallet: string
+        }
+        Update: {
+          budget_cusd?: number
+          category?: Database["public"]["Enums"]["service_category"]
+          circuit_fee_cusd?: number | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          prompt?: string
+          provider_pay_amount_cusd?: number | null
+          provider_tx_hash?: string | null
+          result_text?: string | null
+          result_url?: string | null
+          selected_agent_id?: string | null
+          status?: Database["public"]["Enums"]["job_status"]
+          updated_at?: string
+          user_pay_amount_cusd?: number
+          user_tx_hash?: string | null
+          user_wallet?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jobs_selected_agent_id_fkey"
+            columns: ["selected_agent_id"]
+            isOneToOne: false
+            referencedRelation: "agent_registry"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      timeline_events: {
+        Row: {
+          created_at: string
+          id: string
+          job_id: string
+          message: string
+          metadata: Json | null
+          status: string
+          step: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          job_id: string
+          message: string
+          metadata?: Json | null
+          status?: string
+          step: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          job_id?: string
+          message?: string
+          metadata?: Json | null
+          status?: string
+          step?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "timeline_events_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +170,15 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      job_status:
+        | "awaiting_payment"
+        | "payment_received"
+        | "discovering"
+        | "paying_provider"
+        | "provider_working"
+        | "completed"
+        | "failed"
+      service_category: "logo" | "image" | "social"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +305,17 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      job_status: [
+        "awaiting_payment",
+        "payment_received",
+        "discovering",
+        "paying_provider",
+        "provider_working",
+        "completed",
+        "failed",
+      ],
+      service_category: ["logo", "image", "social"],
+    },
   },
 } as const
