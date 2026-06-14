@@ -9,11 +9,29 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ProcureRouteImport } from './routes/procure'
+import { Route as IntegrateRouteImport } from './routes/integrate'
+import { Route as AgentsRouteImport } from './routes/agents'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiPublicAgentsSocialRouteImport } from './routes/api/public/agents/social'
 import { Route as ApiPublicAgentsLogoRouteImport } from './routes/api/public/agents/logo'
 import { Route as ApiPublicAgentsImageRouteImport } from './routes/api/public/agents/image'
 
+const ProcureRoute = ProcureRouteImport.update({
+  id: '/procure',
+  path: '/procure',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IntegrateRoute = IntegrateRouteImport.update({
+  id: '/integrate',
+  path: '/integrate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgentsRoute = AgentsRouteImport.update({
+  id: '/agents',
+  path: '/agents',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -37,12 +55,18 @@ const ApiPublicAgentsImageRoute = ApiPublicAgentsImageRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/agents': typeof AgentsRoute
+  '/integrate': typeof IntegrateRoute
+  '/procure': typeof ProcureRoute
   '/api/public/agents/image': typeof ApiPublicAgentsImageRoute
   '/api/public/agents/logo': typeof ApiPublicAgentsLogoRoute
   '/api/public/agents/social': typeof ApiPublicAgentsSocialRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/agents': typeof AgentsRoute
+  '/integrate': typeof IntegrateRoute
+  '/procure': typeof ProcureRoute
   '/api/public/agents/image': typeof ApiPublicAgentsImageRoute
   '/api/public/agents/logo': typeof ApiPublicAgentsLogoRoute
   '/api/public/agents/social': typeof ApiPublicAgentsSocialRoute
@@ -50,6 +74,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/agents': typeof AgentsRoute
+  '/integrate': typeof IntegrateRoute
+  '/procure': typeof ProcureRoute
   '/api/public/agents/image': typeof ApiPublicAgentsImageRoute
   '/api/public/agents/logo': typeof ApiPublicAgentsLogoRoute
   '/api/public/agents/social': typeof ApiPublicAgentsSocialRoute
@@ -58,18 +85,27 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/agents'
+    | '/integrate'
+    | '/procure'
     | '/api/public/agents/image'
     | '/api/public/agents/logo'
     | '/api/public/agents/social'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/agents'
+    | '/integrate'
+    | '/procure'
     | '/api/public/agents/image'
     | '/api/public/agents/logo'
     | '/api/public/agents/social'
   id:
     | '__root__'
     | '/'
+    | '/agents'
+    | '/integrate'
+    | '/procure'
     | '/api/public/agents/image'
     | '/api/public/agents/logo'
     | '/api/public/agents/social'
@@ -77,6 +113,9 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AgentsRoute: typeof AgentsRoute
+  IntegrateRoute: typeof IntegrateRoute
+  ProcureRoute: typeof ProcureRoute
   ApiPublicAgentsImageRoute: typeof ApiPublicAgentsImageRoute
   ApiPublicAgentsLogoRoute: typeof ApiPublicAgentsLogoRoute
   ApiPublicAgentsSocialRoute: typeof ApiPublicAgentsSocialRoute
@@ -84,6 +123,27 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/procure': {
+      id: '/procure'
+      path: '/procure'
+      fullPath: '/procure'
+      preLoaderRoute: typeof ProcureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/integrate': {
+      id: '/integrate'
+      path: '/integrate'
+      fullPath: '/integrate'
+      preLoaderRoute: typeof IntegrateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agents': {
+      id: '/agents'
+      path: '/agents'
+      fullPath: '/agents'
+      preLoaderRoute: typeof AgentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -117,6 +177,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AgentsRoute: AgentsRoute,
+  IntegrateRoute: IntegrateRoute,
+  ProcureRoute: ProcureRoute,
   ApiPublicAgentsImageRoute: ApiPublicAgentsImageRoute,
   ApiPublicAgentsLogoRoute: ApiPublicAgentsLogoRoute,
   ApiPublicAgentsSocialRoute: ApiPublicAgentsSocialRoute,
