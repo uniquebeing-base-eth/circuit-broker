@@ -9,40 +9,64 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ProcureRouteImport } from './routes/procure'
+import { Route as ApiRouteImport } from './routes/api'
+import { Route as AgentsRouteImport } from './routes/agents'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiPublicAgentsSocialRouteImport } from './routes/api/public/agents/social'
 import { Route as ApiPublicAgentsLogoRouteImport } from './routes/api/public/agents/logo'
 import { Route as ApiPublicAgentsImageRouteImport } from './routes/api/public/agents/image'
 
+const ProcureRoute = ProcureRouteImport.update({
+  id: '/procure',
+  path: '/procure',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiRoute = ApiRouteImport.update({
+  id: '/api',
+  path: '/api',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgentsRoute = AgentsRouteImport.update({
+  id: '/agents',
+  path: '/agents',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicAgentsSocialRoute = ApiPublicAgentsSocialRouteImport.update({
-  id: '/api/public/agents/social',
-  path: '/api/public/agents/social',
-  getParentRoute: () => rootRouteImport,
+  id: '/public/agents/social',
+  path: '/public/agents/social',
+  getParentRoute: () => ApiRoute,
 } as any)
 const ApiPublicAgentsLogoRoute = ApiPublicAgentsLogoRouteImport.update({
-  id: '/api/public/agents/logo',
-  path: '/api/public/agents/logo',
-  getParentRoute: () => rootRouteImport,
+  id: '/public/agents/logo',
+  path: '/public/agents/logo',
+  getParentRoute: () => ApiRoute,
 } as any)
 const ApiPublicAgentsImageRoute = ApiPublicAgentsImageRouteImport.update({
-  id: '/api/public/agents/image',
-  path: '/api/public/agents/image',
-  getParentRoute: () => rootRouteImport,
+  id: '/public/agents/image',
+  path: '/public/agents/image',
+  getParentRoute: () => ApiRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/agents': typeof AgentsRoute
+  '/api': typeof ApiRouteWithChildren
+  '/procure': typeof ProcureRoute
   '/api/public/agents/image': typeof ApiPublicAgentsImageRoute
   '/api/public/agents/logo': typeof ApiPublicAgentsLogoRoute
   '/api/public/agents/social': typeof ApiPublicAgentsSocialRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/agents': typeof AgentsRoute
+  '/api': typeof ApiRouteWithChildren
+  '/procure': typeof ProcureRoute
   '/api/public/agents/image': typeof ApiPublicAgentsImageRoute
   '/api/public/agents/logo': typeof ApiPublicAgentsLogoRoute
   '/api/public/agents/social': typeof ApiPublicAgentsSocialRoute
@@ -50,6 +74,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/agents': typeof AgentsRoute
+  '/api': typeof ApiRouteWithChildren
+  '/procure': typeof ProcureRoute
   '/api/public/agents/image': typeof ApiPublicAgentsImageRoute
   '/api/public/agents/logo': typeof ApiPublicAgentsLogoRoute
   '/api/public/agents/social': typeof ApiPublicAgentsSocialRoute
@@ -58,18 +85,27 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/agents'
+    | '/api'
+    | '/procure'
     | '/api/public/agents/image'
     | '/api/public/agents/logo'
     | '/api/public/agents/social'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/agents'
+    | '/api'
+    | '/procure'
     | '/api/public/agents/image'
     | '/api/public/agents/logo'
     | '/api/public/agents/social'
   id:
     | '__root__'
     | '/'
+    | '/agents'
+    | '/api'
+    | '/procure'
     | '/api/public/agents/image'
     | '/api/public/agents/logo'
     | '/api/public/agents/social'
@@ -77,13 +113,34 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ApiPublicAgentsImageRoute: typeof ApiPublicAgentsImageRoute
-  ApiPublicAgentsLogoRoute: typeof ApiPublicAgentsLogoRoute
-  ApiPublicAgentsSocialRoute: typeof ApiPublicAgentsSocialRoute
+  AgentsRoute: typeof AgentsRoute
+  ApiRoute: typeof ApiRouteWithChildren
+  ProcureRoute: typeof ProcureRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/procure': {
+      id: '/procure'
+      path: '/procure'
+      fullPath: '/procure'
+      preLoaderRoute: typeof ProcureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api': {
+      id: '/api'
+      path: '/api'
+      fullPath: '/api'
+      preLoaderRoute: typeof ApiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agents': {
+      id: '/agents'
+      path: '/agents'
+      fullPath: '/agents'
+      preLoaderRoute: typeof AgentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -93,44 +150,48 @@ declare module '@tanstack/react-router' {
     }
     '/api/public/agents/social': {
       id: '/api/public/agents/social'
-      path: '/api/public/agents/social'
+      path: '/public/agents/social'
       fullPath: '/api/public/agents/social'
       preLoaderRoute: typeof ApiPublicAgentsSocialRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof ApiRoute
     }
     '/api/public/agents/logo': {
       id: '/api/public/agents/logo'
-      path: '/api/public/agents/logo'
+      path: '/public/agents/logo'
       fullPath: '/api/public/agents/logo'
       preLoaderRoute: typeof ApiPublicAgentsLogoRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof ApiRoute
     }
     '/api/public/agents/image': {
       id: '/api/public/agents/image'
-      path: '/api/public/agents/image'
+      path: '/public/agents/image'
       fullPath: '/api/public/agents/image'
       preLoaderRoute: typeof ApiPublicAgentsImageRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof ApiRoute
     }
   }
 }
 
-const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+interface ApiRouteChildren {
+  ApiPublicAgentsImageRoute: typeof ApiPublicAgentsImageRoute
+  ApiPublicAgentsLogoRoute: typeof ApiPublicAgentsLogoRoute
+  ApiPublicAgentsSocialRoute: typeof ApiPublicAgentsSocialRoute
+}
+
+const ApiRouteChildren: ApiRouteChildren = {
   ApiPublicAgentsImageRoute: ApiPublicAgentsImageRoute,
   ApiPublicAgentsLogoRoute: ApiPublicAgentsLogoRoute,
   ApiPublicAgentsSocialRoute: ApiPublicAgentsSocialRoute,
 }
+
+const ApiRouteWithChildren = ApiRoute._addFileChildren(ApiRouteChildren)
+
+const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
+  AgentsRoute: AgentsRoute,
+  ApiRoute: ApiRouteWithChildren,
+  ProcureRoute: ProcureRoute,
+}
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

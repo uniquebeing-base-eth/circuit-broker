@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { SiteHeader } from "@/components/SiteHeader";
 import { listProviders, getCircuitInfo } from "@/lib/circuit.functions";
 
-export const Route = createFileRoute("/api")({
+export const Route = createFileRoute("/integrate")({
   head: () => ({
     meta: [
       { title: "API & A2A — Circuit" },
@@ -12,7 +12,7 @@ export const Route = createFileRoute("/api")({
       { property: "og:title", content: "Circuit API & A2A" },
       { property: "og:description", content: "x402-protected service endpoints." },
     ],
-    links: [{ rel: "canonical", href: "/api" }],
+    links: [{ rel: "canonical", href: "/integrate" }],
   }),
   component: ApiDocs,
 });

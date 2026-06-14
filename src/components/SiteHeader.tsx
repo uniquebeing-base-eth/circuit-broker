@@ -19,7 +19,7 @@ export function SiteHeader() {
           <Link to="/agents" className="rounded-md px-3 py-1.5 hover:bg-secondary transition" activeProps={{ className: "bg-secondary" }}>
             Agents
           </Link>
-          <Link to="/api" className="rounded-md px-3 py-1.5 hover:bg-secondary transition" activeProps={{ className: "bg-secondary" }}>
+          <Link to="/integrate" className="rounded-md px-3 py-1.5 hover:bg-secondary transition" activeProps={{ className: "bg-secondary" }}>
             API
           </Link>
         </nav>
