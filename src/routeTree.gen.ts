@@ -10,7 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProcureRouteImport } from './routes/procure'
-import { Route as ApiRouteImport } from './routes/api'
+import { Route as IntegrateRouteImport } from './routes/integrate'
 import { Route as AgentsRouteImport } from './routes/agents'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiPublicAgentsSocialRouteImport } from './routes/api/public/agents/social'
@@ -22,9 +22,9 @@ const ProcureRoute = ProcureRouteImport.update({
   path: '/procure',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiRoute = ApiRouteImport.update({
-  id: '/api',
-  path: '/api',
+const IntegrateRoute = IntegrateRouteImport.update({
+  id: '/integrate',
+  path: '/integrate',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AgentsRoute = AgentsRouteImport.update({
@@ -38,25 +38,25 @@ const IndexRoute = IndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicAgentsSocialRoute = ApiPublicAgentsSocialRouteImport.update({
-  id: '/public/agents/social',
-  path: '/public/agents/social',
-  getParentRoute: () => ApiRoute,
+  id: '/api/public/agents/social',
+  path: '/api/public/agents/social',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicAgentsLogoRoute = ApiPublicAgentsLogoRouteImport.update({
-  id: '/public/agents/logo',
-  path: '/public/agents/logo',
-  getParentRoute: () => ApiRoute,
+  id: '/api/public/agents/logo',
+  path: '/api/public/agents/logo',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicAgentsImageRoute = ApiPublicAgentsImageRouteImport.update({
-  id: '/public/agents/image',
-  path: '/public/agents/image',
-  getParentRoute: () => ApiRoute,
+  id: '/api/public/agents/image',
+  path: '/api/public/agents/image',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/agents': typeof AgentsRoute
-  '/api': typeof ApiRouteWithChildren
+  '/integrate': typeof IntegrateRoute
   '/procure': typeof ProcureRoute
   '/api/public/agents/image': typeof ApiPublicAgentsImageRoute
   '/api/public/agents/logo': typeof ApiPublicAgentsLogoRoute
@@ -65,7 +65,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agents': typeof AgentsRoute
-  '/api': typeof ApiRouteWithChildren
+  '/integrate': typeof IntegrateRoute
   '/procure': typeof ProcureRoute
   '/api/public/agents/image': typeof ApiPublicAgentsImageRoute
   '/api/public/agents/logo': typeof ApiPublicAgentsLogoRoute
@@ -75,7 +75,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/agents': typeof AgentsRoute
-  '/api': typeof ApiRouteWithChildren
+  '/integrate': typeof IntegrateRoute
   '/procure': typeof ProcureRoute
   '/api/public/agents/image': typeof ApiPublicAgentsImageRoute
   '/api/public/agents/logo': typeof ApiPublicAgentsLogoRoute
@@ -86,7 +86,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/agents'
-    | '/api'
+    | '/integrate'
     | '/procure'
     | '/api/public/agents/image'
     | '/api/public/agents/logo'
@@ -95,7 +95,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/agents'
-    | '/api'
+    | '/integrate'
     | '/procure'
     | '/api/public/agents/image'
     | '/api/public/agents/logo'
@@ -104,7 +104,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/agents'
-    | '/api'
+    | '/integrate'
     | '/procure'
     | '/api/public/agents/image'
     | '/api/public/agents/logo'
@@ -114,8 +114,11 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AgentsRoute: typeof AgentsRoute
-  ApiRoute: typeof ApiRouteWithChildren
+  IntegrateRoute: typeof IntegrateRoute
   ProcureRoute: typeof ProcureRoute
+  ApiPublicAgentsImageRoute: typeof ApiPublicAgentsImageRoute
+  ApiPublicAgentsLogoRoute: typeof ApiPublicAgentsLogoRoute
+  ApiPublicAgentsSocialRoute: typeof ApiPublicAgentsSocialRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -127,11 +130,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProcureRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api': {
-      id: '/api'
-      path: '/api'
-      fullPath: '/api'
-      preLoaderRoute: typeof ApiRouteImport
+    '/integrate': {
+      id: '/integrate'
+      path: '/integrate'
+      fullPath: '/integrate'
+      preLoaderRoute: typeof IntegrateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/agents': {
@@ -150,47 +153,36 @@ declare module '@tanstack/react-router' {
     }
     '/api/public/agents/social': {
       id: '/api/public/agents/social'
-      path: '/public/agents/social'
+      path: '/api/public/agents/social'
       fullPath: '/api/public/agents/social'
       preLoaderRoute: typeof ApiPublicAgentsSocialRouteImport
-      parentRoute: typeof ApiRoute
+      parentRoute: typeof rootRouteImport
     }
     '/api/public/agents/logo': {
       id: '/api/public/agents/logo'
-      path: '/public/agents/logo'
+      path: '/api/public/agents/logo'
       fullPath: '/api/public/agents/logo'
       preLoaderRoute: typeof ApiPublicAgentsLogoRouteImport
-      parentRoute: typeof ApiRoute
+      parentRoute: typeof rootRouteImport
     }
     '/api/public/agents/image': {
       id: '/api/public/agents/image'
-      path: '/public/agents/image'
+      path: '/api/public/agents/image'
       fullPath: '/api/public/agents/image'
       preLoaderRoute: typeof ApiPublicAgentsImageRouteImport
-      parentRoute: typeof ApiRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
 
-interface ApiRouteChildren {
-  ApiPublicAgentsImageRoute: typeof ApiPublicAgentsImageRoute
-  ApiPublicAgentsLogoRoute: typeof ApiPublicAgentsLogoRoute
-  ApiPublicAgentsSocialRoute: typeof ApiPublicAgentsSocialRoute
-}
-
-const ApiRouteChildren: ApiRouteChildren = {
-  ApiPublicAgentsImageRoute: ApiPublicAgentsImageRoute,
-  ApiPublicAgentsLogoRoute: ApiPublicAgentsLogoRoute,
-  ApiPublicAgentsSocialRoute: ApiPublicAgentsSocialRoute,
-}
-
-const ApiRouteWithChildren = ApiRoute._addFileChildren(ApiRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AgentsRoute: AgentsRoute,
-  ApiRoute: ApiRouteWithChildren,
+  IntegrateRoute: IntegrateRoute,
   ProcureRoute: ProcureRoute,
+  ApiPublicAgentsImageRoute: ApiPublicAgentsImageRoute,
+  ApiPublicAgentsLogoRoute: ApiPublicAgentsLogoRoute,
+  ApiPublicAgentsSocialRoute: ApiPublicAgentsSocialRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
