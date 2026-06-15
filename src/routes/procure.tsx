@@ -257,7 +257,7 @@ function StatusPill({ status }: { status?: string }) {
   return <span className={`rounded-full px-2 py-0.5 text-[10px] font-mono uppercase ${color}`}>{status.replace(/_/g, " ")}</span>;
 }
 
-function RecentJobs({ wallet }: { wallet: Address }) {
+function RecentJobs({ wallet, onOpen }: { wallet: Address; onOpen: (id: string) => void }) {
   const fn = useServerFn(getJobsForWallet);
   const { data } = useQuery({ queryKey: ["jobs", wallet], queryFn: () => fn({ data: { userWallet: wallet } }), refetchInterval: 5000 });
   const jobs = useMemo(() => data?.jobs ?? [], [data]);
@@ -267,15 +267,99 @@ function RecentJobs({ wallet }: { wallet: Address }) {
       <div className="text-[10px] tracking-widest text-muted-foreground uppercase mb-3">Recent jobs</div>
       <ul className="space-y-2">
         {jobs.slice(0, 6).map((j: any) => (
-          <li key={j.id} className="flex items-center justify-between text-xs">
-            <div className="truncate flex-1 mr-2">
-              <span className="text-muted-foreground capitalize mr-2">{j.category}</span>
-              {j.prompt.slice(0, 50)}
-            </div>
-            <StatusPill status={j.status} />
+          <li key={j.id}>
+            <button
+              onClick={() => onOpen(j.id)}
+              className="w-full flex items-center justify-between text-xs rounded-lg px-2 py-2 hover:bg-secondary/40 transition text-left"
+            >
+              <div className="truncate flex-1 mr-2">
+                <span className="text-muted-foreground capitalize mr-2">{j.category}</span>
+                {j.prompt.slice(0, 50)}
+              </div>
+              <StatusPill status={j.status} />
+            </button>
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+function DeliveredImage({ url, category, jobId, events }: { url: string; category: string; jobId: string; events: any[] }) {
+  const [open, setOpen] = useState(false);
+  const filename = `circuit-${category}-${jobId.slice(0, 8)}.png`;
+  return (
+    <>
+      <button onClick={() => setOpen(true)} className="block w-full">
+        <img src={url} alt="Result" className="w-full rounded-lg border border-border hover:opacity-90 transition cursor-zoom-in" />
+      </button>
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <button
+          onClick={() => downloadUrl(url, filename)}
+          className="circuit-gradient text-primary-foreground rounded-lg py-2 text-xs font-semibold inline-flex items-center justify-center gap-2"
+        >
+          <Download className="h-3.5 w-3.5" /> Download
+        </button>
+        <button
+          onClick={() => setOpen(true)}
+          className="rounded-lg border border-border py-2 text-xs font-semibold"
+        >
+          View activity
+        </button>
+      </div>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto bg-background">
+          <DialogHeader>
+            <DialogTitle className="text-sm">Delivery & activity</DialogTitle>
+          </DialogHeader>
+          <img src={url} alt="Result" className="w-full rounded-lg border border-border" />
+          <button
+            onClick={() => downloadUrl(url, filename)}
+            className="w-full circuit-gradient text-primary-foreground rounded-lg py-2 text-xs font-semibold inline-flex items-center justify-center gap-2"
+          >
+            <Download className="h-3.5 w-3.5" /> Download
+          </button>
+          <div>
+            <div className="text-[10px] tracking-widest text-muted-foreground uppercase mb-2">Full activity</div>
+            <ol className="space-y-2">
+              {events.map((e: any) => (
+                <li key={e.id} className="text-xs">
+                  <div className="font-mono uppercase tracking-wider text-[10px] text-muted-foreground">{e.step} · {new Date(e.created_at).toLocaleTimeString()}</div>
+                  <div>{e.message}</div>
+                  {e.metadata?.txHash && (
+                    <a href={`https://celoscan.io/tx/${e.metadata.txHash}`} target="_blank" rel="noreferrer" className="text-[11px] text-circuit underline font-mono">↗ {e.metadata.txHash.slice(0, 14)}…</a>
+                  )}
+                </li>
+              ))}
+            </ol>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+
+function DeliveredText({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+  const copy = async () => {
+    try { await navigator.clipboard.writeText(text); }
+    catch {
+      const ta = document.createElement("textarea");
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      document.execCommand("copy"); ta.remove();
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+  return (
+    <div className="space-y-3">
+      <p className="whitespace-pre-wrap text-sm rounded-lg border border-border bg-secondary/30 p-3">{text}</p>
+      <button
+        onClick={copy}
+        className="w-full circuit-gradient text-primary-foreground rounded-lg py-2 text-xs font-semibold inline-flex items-center justify-center gap-2"
+      >
+        {copied ? <><Check className="h-3.5 w-3.5" /> Copied</> : <><Copy className="h-3.5 w-3.5" /> Copy text</>}
+      </button>
     </div>
   );
 }
