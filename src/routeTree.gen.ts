@@ -11,8 +11,13 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProcureRouteImport } from './routes/procure'
 import { Route as IntegrateRouteImport } from './routes/integrate'
+import { Route as HealthRouteImport } from './routes/health'
 import { Route as AgentsRouteImport } from './routes/agents'
+import { Route as AgentCardDotjsonRouteImport } from './routes/agent-card[.]json'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiA2aRouteImport } from './routes/api/a2a'
+import { Route as DotwellKnownAgentDotjsonRouteImport } from './routes/[.]well-known.agent[.]json'
+import { Route as DotwellKnownAgentCardDotjsonRouteImport } from './routes/[.]well-known.agent-card[.]json'
 import { Route as ApiPublicAgentsSocialRouteImport } from './routes/api/public/agents/social'
 import { Route as ApiPublicAgentsLogoRouteImport } from './routes/api/public/agents/logo'
 import { Route as ApiPublicAgentsImageRouteImport } from './routes/api/public/agents/image'
@@ -27,9 +32,19 @@ const IntegrateRoute = IntegrateRouteImport.update({
   path: '/integrate',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HealthRoute = HealthRouteImport.update({
+  id: '/health',
+  path: '/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AgentsRoute = AgentsRouteImport.update({
   id: '/agents',
   path: '/agents',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgentCardDotjsonRoute = AgentCardDotjsonRouteImport.update({
+  id: '/agent-card.json',
+  path: '/agent-card.json',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -37,6 +52,23 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiA2aRoute = ApiA2aRouteImport.update({
+  id: '/api/a2a',
+  path: '/api/a2a',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DotwellKnownAgentDotjsonRoute =
+  DotwellKnownAgentDotjsonRouteImport.update({
+    id: '/.well-known/agent.json',
+    path: '/.well-known/agent.json',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const DotwellKnownAgentCardDotjsonRoute =
+  DotwellKnownAgentCardDotjsonRouteImport.update({
+    id: '/.well-known/agent-card.json',
+    path: '/.well-known/agent-card.json',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicAgentsSocialRoute = ApiPublicAgentsSocialRouteImport.update({
   id: '/api/public/agents/social',
   path: '/api/public/agents/social',
@@ -55,18 +87,28 @@ const ApiPublicAgentsImageRoute = ApiPublicAgentsImageRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/agent-card.json': typeof AgentCardDotjsonRoute
   '/agents': typeof AgentsRoute
+  '/health': typeof HealthRoute
   '/integrate': typeof IntegrateRoute
   '/procure': typeof ProcureRoute
+  '/.well-known/agent-card.json': typeof DotwellKnownAgentCardDotjsonRoute
+  '/.well-known/agent.json': typeof DotwellKnownAgentDotjsonRoute
+  '/api/a2a': typeof ApiA2aRoute
   '/api/public/agents/image': typeof ApiPublicAgentsImageRoute
   '/api/public/agents/logo': typeof ApiPublicAgentsLogoRoute
   '/api/public/agents/social': typeof ApiPublicAgentsSocialRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/agent-card.json': typeof AgentCardDotjsonRoute
   '/agents': typeof AgentsRoute
+  '/health': typeof HealthRoute
   '/integrate': typeof IntegrateRoute
   '/procure': typeof ProcureRoute
+  '/.well-known/agent-card.json': typeof DotwellKnownAgentCardDotjsonRoute
+  '/.well-known/agent.json': typeof DotwellKnownAgentDotjsonRoute
+  '/api/a2a': typeof ApiA2aRoute
   '/api/public/agents/image': typeof ApiPublicAgentsImageRoute
   '/api/public/agents/logo': typeof ApiPublicAgentsLogoRoute
   '/api/public/agents/social': typeof ApiPublicAgentsSocialRoute
@@ -74,9 +116,14 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/agent-card.json': typeof AgentCardDotjsonRoute
   '/agents': typeof AgentsRoute
+  '/health': typeof HealthRoute
   '/integrate': typeof IntegrateRoute
   '/procure': typeof ProcureRoute
+  '/.well-known/agent-card.json': typeof DotwellKnownAgentCardDotjsonRoute
+  '/.well-known/agent.json': typeof DotwellKnownAgentDotjsonRoute
+  '/api/a2a': typeof ApiA2aRoute
   '/api/public/agents/image': typeof ApiPublicAgentsImageRoute
   '/api/public/agents/logo': typeof ApiPublicAgentsLogoRoute
   '/api/public/agents/social': typeof ApiPublicAgentsSocialRoute
@@ -85,27 +132,42 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/agent-card.json'
     | '/agents'
+    | '/health'
     | '/integrate'
     | '/procure'
+    | '/.well-known/agent-card.json'
+    | '/.well-known/agent.json'
+    | '/api/a2a'
     | '/api/public/agents/image'
     | '/api/public/agents/logo'
     | '/api/public/agents/social'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/agent-card.json'
     | '/agents'
+    | '/health'
     | '/integrate'
     | '/procure'
+    | '/.well-known/agent-card.json'
+    | '/.well-known/agent.json'
+    | '/api/a2a'
     | '/api/public/agents/image'
     | '/api/public/agents/logo'
     | '/api/public/agents/social'
   id:
     | '__root__'
     | '/'
+    | '/agent-card.json'
     | '/agents'
+    | '/health'
     | '/integrate'
     | '/procure'
+    | '/.well-known/agent-card.json'
+    | '/.well-known/agent.json'
+    | '/api/a2a'
     | '/api/public/agents/image'
     | '/api/public/agents/logo'
     | '/api/public/agents/social'
@@ -113,9 +175,14 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AgentCardDotjsonRoute: typeof AgentCardDotjsonRoute
   AgentsRoute: typeof AgentsRoute
+  HealthRoute: typeof HealthRoute
   IntegrateRoute: typeof IntegrateRoute
   ProcureRoute: typeof ProcureRoute
+  DotwellKnownAgentCardDotjsonRoute: typeof DotwellKnownAgentCardDotjsonRoute
+  DotwellKnownAgentDotjsonRoute: typeof DotwellKnownAgentDotjsonRoute
+  ApiA2aRoute: typeof ApiA2aRoute
   ApiPublicAgentsImageRoute: typeof ApiPublicAgentsImageRoute
   ApiPublicAgentsLogoRoute: typeof ApiPublicAgentsLogoRoute
   ApiPublicAgentsSocialRoute: typeof ApiPublicAgentsSocialRoute
@@ -137,6 +204,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IntegrateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/health': {
+      id: '/health'
+      path: '/health'
+      fullPath: '/health'
+      preLoaderRoute: typeof HealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/agents': {
       id: '/agents'
       path: '/agents'
@@ -144,11 +218,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AgentsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/agent-card.json': {
+      id: '/agent-card.json'
+      path: '/agent-card.json'
+      fullPath: '/agent-card.json'
+      preLoaderRoute: typeof AgentCardDotjsonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/a2a': {
+      id: '/api/a2a'
+      path: '/api/a2a'
+      fullPath: '/api/a2a'
+      preLoaderRoute: typeof ApiA2aRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.well-known/agent.json': {
+      id: '/.well-known/agent.json'
+      path: '/.well-known/agent.json'
+      fullPath: '/.well-known/agent.json'
+      preLoaderRoute: typeof DotwellKnownAgentDotjsonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.well-known/agent-card.json': {
+      id: '/.well-known/agent-card.json'
+      path: '/.well-known/agent-card.json'
+      fullPath: '/.well-known/agent-card.json'
+      preLoaderRoute: typeof DotwellKnownAgentCardDotjsonRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/agents/social': {
@@ -177,9 +279,14 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AgentCardDotjsonRoute: AgentCardDotjsonRoute,
   AgentsRoute: AgentsRoute,
+  HealthRoute: HealthRoute,
   IntegrateRoute: IntegrateRoute,
   ProcureRoute: ProcureRoute,
+  DotwellKnownAgentCardDotjsonRoute: DotwellKnownAgentCardDotjsonRoute,
+  DotwellKnownAgentDotjsonRoute: DotwellKnownAgentDotjsonRoute,
+  ApiA2aRoute: ApiA2aRoute,
   ApiPublicAgentsImageRoute: ApiPublicAgentsImageRoute,
   ApiPublicAgentsLogoRoute: ApiPublicAgentsLogoRoute,
   ApiPublicAgentsSocialRoute: ApiPublicAgentsSocialRoute,
@@ -187,13 +294,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
