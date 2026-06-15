@@ -162,7 +162,7 @@ function Procure() {
           <JobView jobId={jobId} onReset={() => { setJobId(null); setPrompt(""); }} />
         )}
 
-        {addr && <RecentJobs wallet={addr} />}
+        {addr && <RecentJobs wallet={addr} onOpen={(id) => setJobId(id)} />}
       </main>
     </div>
   );
