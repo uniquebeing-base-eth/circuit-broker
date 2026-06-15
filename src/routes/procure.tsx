@@ -231,8 +231,12 @@ function JobView({ jobId, onReset }: { jobId: string; onReset: () => void }) {
       {job?.status === "completed" && (
         <div className="glass rounded-2xl p-5">
           <div className="text-[10px] tracking-widest text-muted-foreground uppercase mb-3">Delivered</div>
-          {job.result_url && <img src={job.result_url} alt="Result" className="w-full rounded-lg border border-border" />}
-          {job.result_text && <p className="whitespace-pre-wrap text-sm">{job.result_text}</p>}
+          {job.result_url && (
+            <DeliveredImage url={job.result_url} category={job.category} jobId={jobId} events={events} />
+          )}
+          {job.result_text && (
+            <DeliveredText text={job.result_text} />
+          )}
           <button onClick={onReset} className="mt-4 w-full circuit-gradient text-primary-foreground rounded-lg py-2 text-sm font-semibold">New request</button>
         </div>
       )}
