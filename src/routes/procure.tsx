@@ -6,7 +6,23 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { connectWallet, sendCusd, shortAddr, detectProvider } from "@/lib/wallet";
 import { createJob, confirmPayment, getJob, getCircuitInfo, getJobsForWallet } from "@/lib/circuit.functions";
 import { supabase } from "@/integrations/supabase/client";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Download, Copy, Check } from "lucide-react";
 import type { Address } from "viem";
+
+async function downloadUrl(url: string, filename: string) {
+  try {
+    const res = await fetch(url, { mode: "cors" });
+    const blob = await res.blob();
+    const a = document.createElement("a");
+    const objUrl = URL.createObjectURL(blob);
+    a.href = objUrl; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(objUrl), 1000);
+  } catch {
+    window.open(url, "_blank");
+  }
+}
 
 export const Route = createFileRoute("/procure")({
   head: () => ({
