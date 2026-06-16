@@ -18,9 +18,12 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiA2aRouteImport } from './routes/api/a2a'
 import { Route as DotwellKnownAgentDotjsonRouteImport } from './routes/[.]well-known.agent[.]json'
 import { Route as DotwellKnownAgentCardDotjsonRouteImport } from './routes/[.]well-known.agent-card[.]json'
+import { Route as ApiPublicJobsIndexRouteImport } from './routes/api/public/jobs/index'
+import { Route as ApiPublicJobsJobIdRouteImport } from './routes/api/public/jobs/$jobId'
 import { Route as ApiPublicAgentsSocialRouteImport } from './routes/api/public/agents/social'
 import { Route as ApiPublicAgentsLogoRouteImport } from './routes/api/public/agents/logo'
 import { Route as ApiPublicAgentsImageRouteImport } from './routes/api/public/agents/image'
+import { Route as ApiPublicAgentsCategoryRouteImport } from './routes/api/public/agents/$category'
 
 const ProcureRoute = ProcureRouteImport.update({
   id: '/procure',
@@ -69,6 +72,16 @@ const DotwellKnownAgentCardDotjsonRoute =
     path: '/.well-known/agent-card.json',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicJobsIndexRoute = ApiPublicJobsIndexRouteImport.update({
+  id: '/api/public/jobs/',
+  path: '/api/public/jobs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicJobsJobIdRoute = ApiPublicJobsJobIdRouteImport.update({
+  id: '/api/public/jobs/$jobId',
+  path: '/api/public/jobs/$jobId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicAgentsSocialRoute = ApiPublicAgentsSocialRouteImport.update({
   id: '/api/public/agents/social',
   path: '/api/public/agents/social',
@@ -84,6 +97,11 @@ const ApiPublicAgentsImageRoute = ApiPublicAgentsImageRouteImport.update({
   path: '/api/public/agents/image',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicAgentsCategoryRoute = ApiPublicAgentsCategoryRouteImport.update({
+  id: '/api/public/agents/$category',
+  path: '/api/public/agents/$category',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -95,9 +113,12 @@ export interface FileRoutesByFullPath {
   '/.well-known/agent-card.json': typeof DotwellKnownAgentCardDotjsonRoute
   '/.well-known/agent.json': typeof DotwellKnownAgentDotjsonRoute
   '/api/a2a': typeof ApiA2aRoute
+  '/api/public/agents/$category': typeof ApiPublicAgentsCategoryRoute
   '/api/public/agents/image': typeof ApiPublicAgentsImageRoute
   '/api/public/agents/logo': typeof ApiPublicAgentsLogoRoute
   '/api/public/agents/social': typeof ApiPublicAgentsSocialRoute
+  '/api/public/jobs/$jobId': typeof ApiPublicJobsJobIdRoute
+  '/api/public/jobs/': typeof ApiPublicJobsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -109,9 +130,12 @@ export interface FileRoutesByTo {
   '/.well-known/agent-card.json': typeof DotwellKnownAgentCardDotjsonRoute
   '/.well-known/agent.json': typeof DotwellKnownAgentDotjsonRoute
   '/api/a2a': typeof ApiA2aRoute
+  '/api/public/agents/$category': typeof ApiPublicAgentsCategoryRoute
   '/api/public/agents/image': typeof ApiPublicAgentsImageRoute
   '/api/public/agents/logo': typeof ApiPublicAgentsLogoRoute
   '/api/public/agents/social': typeof ApiPublicAgentsSocialRoute
+  '/api/public/jobs/$jobId': typeof ApiPublicJobsJobIdRoute
+  '/api/public/jobs': typeof ApiPublicJobsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -124,9 +148,12 @@ export interface FileRoutesById {
   '/.well-known/agent-card.json': typeof DotwellKnownAgentCardDotjsonRoute
   '/.well-known/agent.json': typeof DotwellKnownAgentDotjsonRoute
   '/api/a2a': typeof ApiA2aRoute
+  '/api/public/agents/$category': typeof ApiPublicAgentsCategoryRoute
   '/api/public/agents/image': typeof ApiPublicAgentsImageRoute
   '/api/public/agents/logo': typeof ApiPublicAgentsLogoRoute
   '/api/public/agents/social': typeof ApiPublicAgentsSocialRoute
+  '/api/public/jobs/$jobId': typeof ApiPublicJobsJobIdRoute
+  '/api/public/jobs/': typeof ApiPublicJobsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -140,9 +167,12 @@ export interface FileRouteTypes {
     | '/.well-known/agent-card.json'
     | '/.well-known/agent.json'
     | '/api/a2a'
+    | '/api/public/agents/$category'
     | '/api/public/agents/image'
     | '/api/public/agents/logo'
     | '/api/public/agents/social'
+    | '/api/public/jobs/$jobId'
+    | '/api/public/jobs/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -154,9 +184,12 @@ export interface FileRouteTypes {
     | '/.well-known/agent-card.json'
     | '/.well-known/agent.json'
     | '/api/a2a'
+    | '/api/public/agents/$category'
     | '/api/public/agents/image'
     | '/api/public/agents/logo'
     | '/api/public/agents/social'
+    | '/api/public/jobs/$jobId'
+    | '/api/public/jobs'
   id:
     | '__root__'
     | '/'
@@ -168,9 +201,12 @@ export interface FileRouteTypes {
     | '/.well-known/agent-card.json'
     | '/.well-known/agent.json'
     | '/api/a2a'
+    | '/api/public/agents/$category'
     | '/api/public/agents/image'
     | '/api/public/agents/logo'
     | '/api/public/agents/social'
+    | '/api/public/jobs/$jobId'
+    | '/api/public/jobs/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -183,9 +219,12 @@ export interface RootRouteChildren {
   DotwellKnownAgentCardDotjsonRoute: typeof DotwellKnownAgentCardDotjsonRoute
   DotwellKnownAgentDotjsonRoute: typeof DotwellKnownAgentDotjsonRoute
   ApiA2aRoute: typeof ApiA2aRoute
+  ApiPublicAgentsCategoryRoute: typeof ApiPublicAgentsCategoryRoute
   ApiPublicAgentsImageRoute: typeof ApiPublicAgentsImageRoute
   ApiPublicAgentsLogoRoute: typeof ApiPublicAgentsLogoRoute
   ApiPublicAgentsSocialRoute: typeof ApiPublicAgentsSocialRoute
+  ApiPublicJobsJobIdRoute: typeof ApiPublicJobsJobIdRoute
+  ApiPublicJobsIndexRoute: typeof ApiPublicJobsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -253,6 +292,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DotwellKnownAgentCardDotjsonRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/jobs/': {
+      id: '/api/public/jobs/'
+      path: '/api/public/jobs'
+      fullPath: '/api/public/jobs/'
+      preLoaderRoute: typeof ApiPublicJobsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/jobs/$jobId': {
+      id: '/api/public/jobs/$jobId'
+      path: '/api/public/jobs/$jobId'
+      fullPath: '/api/public/jobs/$jobId'
+      preLoaderRoute: typeof ApiPublicJobsJobIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/agents/social': {
       id: '/api/public/agents/social'
       path: '/api/public/agents/social'
@@ -274,6 +327,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicAgentsImageRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/agents/$category': {
+      id: '/api/public/agents/$category'
+      path: '/api/public/agents/$category'
+      fullPath: '/api/public/agents/$category'
+      preLoaderRoute: typeof ApiPublicAgentsCategoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -287,9 +347,12 @@ const rootRouteChildren: RootRouteChildren = {
   DotwellKnownAgentCardDotjsonRoute: DotwellKnownAgentCardDotjsonRoute,
   DotwellKnownAgentDotjsonRoute: DotwellKnownAgentDotjsonRoute,
   ApiA2aRoute: ApiA2aRoute,
+  ApiPublicAgentsCategoryRoute: ApiPublicAgentsCategoryRoute,
   ApiPublicAgentsImageRoute: ApiPublicAgentsImageRoute,
   ApiPublicAgentsLogoRoute: ApiPublicAgentsLogoRoute,
   ApiPublicAgentsSocialRoute: ApiPublicAgentsSocialRoute,
+  ApiPublicJobsJobIdRoute: ApiPublicJobsJobIdRoute,
+  ApiPublicJobsIndexRoute: ApiPublicJobsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
