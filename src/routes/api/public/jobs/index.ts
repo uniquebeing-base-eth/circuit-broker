@@ -17,7 +17,7 @@ async function buildResponse(req: Request): Promise<Response> {
 
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   let q = supabaseAdmin.from("jobs").select("id, status, category, chain, asset, prompt, created_at, updated_at").order("created_at", { ascending: false }).limit(limit);
-  if (status) q = q.eq("status", status);
+  if (status) q = q.eq("status", status as any);
   if (category) q = q.eq("category", category);
   if (wallet) q = q.eq("user_wallet", wallet);
   const { data, error } = await q;
