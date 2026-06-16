@@ -1,27 +1,23 @@
-// x402-style payment requirements helper for provider endpoints.
+// x402-style payment requirements for provider endpoints, chain-aware.
 import type { Address } from "viem";
-
-export interface X402Requirements {
-  scheme: "exact";
-  network: "celo";
-  asset: string;
-  payTo: Address;
-  maxAmountRequired: string; // base units (cUSD wei)
-  resource: string;
-  description: string;
-  mimeType: string;
-  maxTimeoutSeconds: number;
-}
+import { getChainConfig } from "@/lib/chains.server";
 
 export function buildX402Response(opts: {
-  payTo: Address; priceCusd: number; resource: string; description: string;
+  chainKey: string;
+  payTo: Address;
+  priceCusd: number;
+  resource: string;
+  description: string;
 }): Response {
-  const requirements: X402Requirements = {
+  const cfg = getChainConfig(opts.chainKey);
+  const amount = BigInt(Math.round(opts.priceCusd * 10 ** cfg.decimals)).toString();
+  const requirements = {
     scheme: "exact",
-    network: "celo",
-    asset: "0x765DE816845861e75A25fCA122bb6898B8B1282a",
+    network: opts.chainKey,
+    asset: cfg.assetAddress,
+    assetSymbol: cfg.asset,
     payTo: opts.payTo,
-    maxAmountRequired: (BigInt(Math.round(opts.priceCusd * 1e18))).toString(),
+    maxAmountRequired: amount,
     resource: opts.resource,
     description: opts.description,
     mimeType: "application/json",
@@ -29,11 +25,18 @@ export function buildX402Response(opts: {
   };
   return new Response(
     JSON.stringify({ x402Version: 1, error: "payment_required", accepts: [requirements] }),
-    { status: 402, headers: { "Content-Type": "application/json", "WWW-Authenticate": "X402" } },
+    {
+      status: 402,
+      headers: {
+        "Content-Type": "application/json",
+        "WWW-Authenticate": "X402",
+        "Access-Control-Allow-Origin": "*",
+      },
+    },
   );
 }
 
-/** A payment header is a base64-encoded JSON: { txHash, from } */
+/** Payment header: base64-encoded JSON { txHash, from } */
 export function parseX402PaymentHeader(headerValue: string | null): { txHash: `0x${string}`; from: Address } | null {
   if (!headerValue) return null;
   try {

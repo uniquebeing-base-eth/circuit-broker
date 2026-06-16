@@ -17,8 +17,10 @@ export type Database = {
       agent_registry: {
         Row: {
           active: boolean
+          asset: string
           avg_delivery_ms: number
-          category: Database["public"]["Enums"]["service_category"]
+          category: string
+          chain: string
           created_at: string
           description: string
           endpoint: string
@@ -30,8 +32,10 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          asset?: string
           avg_delivery_ms?: number
-          category: Database["public"]["Enums"]["service_category"]
+          category: string
+          chain?: string
           created_at?: string
           description: string
           endpoint: string
@@ -43,8 +47,10 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          asset?: string
           avg_delivery_ms?: number
-          category?: Database["public"]["Enums"]["service_category"]
+          category?: string
+          chain?: string
           created_at?: string
           description?: string
           endpoint?: string
@@ -58,8 +64,10 @@ export type Database = {
       }
       jobs: {
         Row: {
+          asset: string
           budget_cusd: number
-          category: Database["public"]["Enums"]["service_category"]
+          category: string
+          chain: string
           circuit_fee_cusd: number | null
           created_at: string
           error: string | null
@@ -77,8 +85,10 @@ export type Database = {
           user_wallet: string
         }
         Insert: {
+          asset?: string
           budget_cusd: number
-          category: Database["public"]["Enums"]["service_category"]
+          category: string
+          chain?: string
           circuit_fee_cusd?: number | null
           created_at?: string
           error?: string | null
@@ -96,8 +106,10 @@ export type Database = {
           user_wallet: string
         }
         Update: {
+          asset?: string
           budget_cusd?: number
-          category?: Database["public"]["Enums"]["service_category"]
+          category?: string
+          chain?: string
           circuit_fee_cusd?: number | null
           created_at?: string
           error?: string | null
@@ -178,7 +190,6 @@ export type Database = {
         | "provider_working"
         | "completed"
         | "failed"
-      service_category: "logo" | "image" | "social"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -315,7 +326,6 @@ export const Constants = {
         "completed",
         "failed",
       ],
-      service_category: ["logo", "image", "social"],
     },
   },
 } as const

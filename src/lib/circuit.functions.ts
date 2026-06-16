@@ -1,18 +1,16 @@
-// Circuit orchestrator: server functions for creating jobs, confirming payment,
-// and running the full procurement loop (discover → pay provider → deliver).
+// Circuit orchestrator: chain-aware procurement loop (Celo + Base).
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { getRequest } from "@tanstack/react-start/server";
 import type { Address, Hex } from "viem";
 import { getAddress } from "viem";
 
-const CategoryEnum = z.enum(["logo", "image", "social"]);
-
 const CreateJobSchema = z.object({
   userWallet: z.string().regex(/^0x[a-fA-F0-9]{40}$/),
-  category: CategoryEnum,
-  prompt: z.string().min(3).max(500),
+  category: z.string().min(2).max(40),
+  prompt: z.string().min(3).max(2000),
   budgetCusd: z.number().positive().max(1),
+  preferredChain: z.enum(["celo", "base"]).optional(),
 });
 
 const ConfirmPaymentSchema = z.object({
@@ -31,38 +29,48 @@ async function setJob(jobId: string, patch: Record<string, unknown>) {
 }
 
 export const getCircuitInfo = createServerFn({ method: "GET" }).handler(async () => {
-  const { getCircuitAddress, getCusdBalance, fromCusdUnits, CIRCUIT_AGENT_ID } = await import("@/lib/celo.server");
+  const { getCircuitAddress, getAssetBalance, fromAssetUnits, publicClientFor } = await import("@/lib/chains.server");
+  const { CIRCUIT_AGENT_ID } = await import("@/lib/celo.server");
   const addr = getCircuitAddress();
-  let cusd = "0";
-  let celo = "0";
-  try {
-    const bal = await getCusdBalance(addr);
-    cusd = fromCusdUnits(bal);
-  } catch {}
-  try {
-    const { publicClient } = await import("@/lib/celo.server");
-    const native = await publicClient.getBalance({ address: addr });
-    celo = (Number(native) / 1e18).toFixed(4);
-  } catch {}
-  return { address: addr, cusdBalance: cusd, celoBalance: celo, agentId: CIRCUIT_AGENT_ID.toString() };
+  const balances: Record<string, { asset: string; balance: string; native: string }> = {};
+  for (const chain of ["celo", "base"] as const) {
+    try {
+      const bal = await getAssetBalance(chain, addr);
+      const native = await publicClientFor(chain).getBalance({ address: addr });
+      balances[chain] = {
+        asset: chain === "celo" ? "cUSD" : "USDC",
+        balance: fromAssetUnits(chain, bal),
+        native: (Number(native) / 1e18).toFixed(4),
+      };
+    } catch {
+      balances[chain] = { asset: chain === "celo" ? "cUSD" : "USDC", balance: "0", native: "0" };
+    }
+  }
+  return {
+    address: addr,
+    agentId: CIRCUIT_AGENT_ID.toString(),
+    chains: balances,
+    // backward-compat fields for existing UI
+    cusdBalance: balances.celo.balance,
+    celoBalance: balances.celo.native,
+  };
 });
 
 export const createJob = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => CreateJobSchema.parse(d))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { getCircuitAddress } = await import("@/lib/celo.server");
+    const { getCircuitAddress } = await import("@/lib/chains.server");
 
-    // Pick the best provider for this category within budget (lowest price with high reputation).
-    const { data: agents, error: agentsErr } = await supabaseAdmin
-      .from("agent_registry").select("*")
+    let query = supabaseAdmin.from("agent_registry").select("*")
       .eq("category", data.category).eq("active", true)
-      .lte("price_cusd", data.budgetCusd)
+      .lte("price_cusd", data.budgetCusd);
+    if (data.preferredChain) query = query.eq("chain", data.preferredChain);
+    const { data: agents, error: agentsErr } = await query
       .order("reputation", { ascending: false }).order("price_cusd", { ascending: true });
     if (agentsErr) throw new Error(agentsErr.message);
-    if (!agents || agents.length === 0) throw new Error("No providers available within budget. Increase budget.");
+    if (!agents || agents.length === 0) throw new Error("No providers available within budget. Try a higher budget or a different category.");
 
-    // Circuit's price = provider price + 0.005 cUSD margin, capped at user budget.
     const provider = agents[0];
     const providerPrice = Number(provider.price_cusd);
     const userPay = Math.min(providerPrice + 0.005, data.budgetCusd);
@@ -74,16 +82,20 @@ export const createJob = createServerFn({ method: "POST" })
       budget_cusd: data.budgetCusd,
       user_pay_amount_cusd: userPay,
       status: "awaiting_payment",
+      chain: provider.chain,
+      asset: provider.asset,
     }).select("*").single();
     if (error) throw new Error(error.message);
 
-    await logEvent(job.id, "created", `Job created. Requesting ${userPay.toFixed(4)} cUSD from buyer.`);
+    await logEvent(job.id, "created", `Job created on ${provider.chain.toUpperCase()}. Requesting ${userPay.toFixed(4)} ${provider.asset} from buyer.`);
 
     return {
       jobId: job.id as string,
       payTo: getCircuitAddress(),
       amountCusd: userPay,
-      providerPreview: { name: provider.name, price: providerPrice, reputation: Number(provider.reputation) },
+      chain: provider.chain,
+      asset: provider.asset,
+      providerPreview: { name: provider.name, price: providerPrice, reputation: Number(provider.reputation), chain: provider.chain },
     };
   });
 
@@ -92,26 +104,27 @@ export const confirmPayment = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const {
-      getCircuitAddress, verifyCusdPayment, toCusdUnits, circuitSendCusd, REPUTATION_ABI,
-      ERC8004_REPUTATION, getCircuitWalletClient, publicClient, CIRCUIT_AGENT_ID,
-    } = await import("@/lib/celo.server");
+      getCircuitAddress, verifyAssetPayment, toAssetUnits, circuitSendAsset, fromAssetUnits,
+    } = await import("@/lib/chains.server");
+    const { REPUTATION_ABI, ERC8004_REPUTATION, getCircuitWalletClient, publicClient, CIRCUIT_AGENT_ID } = await import("@/lib/celo.server");
 
     const { data: job, error: jobErr } = await supabaseAdmin
       .from("jobs").select("*").eq("id", data.jobId).maybeSingle();
     if (jobErr || !job) throw new Error("Job not found");
-    if (job.status !== "awaiting_payment") {
-      return { ok: true, alreadyRunning: true };
-    }
+    if (job.status !== "awaiting_payment") return { ok: true, alreadyRunning: true };
+
+    const chain = job.chain || "celo";
+    const asset = job.asset || "cUSD";
 
     await setJob(job.id, { user_tx_hash: data.txHash });
 
-    // 1. Verify the user's cUSD payment landed.
-    await logEvent(job.id, "payment", "Verifying buyer payment on Celo…", "running");
-    const verify = await verifyCusdPayment({
+    await logEvent(job.id, "payment", `Verifying buyer payment on ${chain.toUpperCase()}…`, "running");
+    const verify = await verifyAssetPayment({
+      chainKey: chain,
       txHash: data.txHash as Hex,
       expectedFrom: getAddress(job.user_wallet) as Address,
       expectedTo: getCircuitAddress(),
-      minAmount: toCusdUnits(Number(job.user_pay_amount_cusd)),
+      minAmount: toAssetUnits(chain, Number(job.user_pay_amount_cusd)),
     });
     if (!verify.ok) {
       await setJob(job.id, { status: "failed", error: `payment_invalid: ${verify.reason}` });
@@ -119,35 +132,33 @@ export const confirmPayment = createServerFn({ method: "POST" })
       throw new Error(`Payment verification failed: ${verify.reason}`);
     }
     await setJob(job.id, { status: "payment_received" });
-    await logEvent(job.id, "payment", `✓ Received ${(Number(verify.actualAmount) / 1e18).toFixed(4)} cUSD from buyer`, "done", { txHash: data.txHash });
+    await logEvent(job.id, "payment", `✓ Received ${fromAssetUnits(chain, verify.actualAmount)} ${asset} from buyer`, "done", { txHash: data.txHash });
 
-    // 2. Discovery — list providers (re-query for fresh data).
+    // 2. Discovery — restrict to providers on the same chain as the buyer paid.
     await setJob(job.id, { status: "discovering" });
-    await logEvent(job.id, "discover", "Discovering specialized agents on Celo…", "running");
+    await logEvent(job.id, "discover", `Discovering ${job.category} agents on ${chain.toUpperCase()}…`, "running");
     const { data: agents } = await supabaseAdmin
       .from("agent_registry").select("*")
-      .eq("category", job.category).eq("active", true)
+      .eq("category", job.category).eq("active", true).eq("chain", chain)
       .lte("price_cusd", Number(job.budget_cusd))
       .order("reputation", { ascending: false }).order("price_cusd", { ascending: true });
     if (!agents || agents.length === 0) {
       await setJob(job.id, { status: "failed", error: "no_providers" });
       throw new Error("No providers");
     }
-    await logEvent(job.id, "discover", `✓ ${agents.length} providers discovered`, "done", {
-      providers: agents.map((a) => ({ name: a.name, price: Number(a.price_cusd), reputation: Number(a.reputation) })),
+    await logEvent(job.id, "discover", `✓ ${agents.length} providers discovered on ${chain.toUpperCase()}`, "done", {
+      providers: agents.map((a) => ({ name: a.name, price: Number(a.price_cusd), reputation: Number(a.reputation), chain: a.chain })),
     });
 
-    // 3. Compare offers (already sorted by rep desc, price asc).
     await logEvent(job.id, "compare", "Comparing price, reputation, delivery time…", "running");
     const chosen = agents[0];
-    await logEvent(job.id, "compare", `✓ Best value: ${chosen.name} @ ${Number(chosen.price_cusd).toFixed(3)} cUSD (★${Number(chosen.reputation).toFixed(1)})`, "done");
+    await logEvent(job.id, "compare", `✓ Best value: ${chosen.name} @ ${Number(chosen.price_cusd).toFixed(3)} ${asset} (★${Number(chosen.reputation).toFixed(1)})`, "done");
     await setJob(job.id, { selected_agent_id: chosen.id, provider_pay_amount_cusd: Number(chosen.price_cusd) });
 
-    // 4. Hire via x402 — first call gets 402 with payment requirements.
     await setJob(job.id, { status: "paying_provider" });
     const origin = new URL(getRequest().url).origin;
     const providerUrl = `${origin}${chosen.endpoint}?agent=${chosen.id}`;
-    await logEvent(job.id, "quote", `Requesting quote from ${chosen.name}…`, "running");
+    await logEvent(job.id, "quote", `Requesting x402 quote from ${chosen.name}…`, "running");
     const probe = await fetch(providerUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}) });
     if (probe.status !== 402) {
       await setJob(job.id, { status: "failed", error: `unexpected_probe_status_${probe.status}` });
@@ -155,13 +166,12 @@ export const confirmPayment = createServerFn({ method: "POST" })
     }
     const reqs = await probe.json();
     const accept = reqs.accepts?.[0];
-    await logEvent(job.id, "quote", `✓ ${chosen.name} requires ${(BigInt(accept.maxAmountRequired) / 10n ** 12n).toString()} micro-cUSD via x402`, "done");
+    await logEvent(job.id, "quote", `✓ ${chosen.name} requires ${fromAssetUnits(chain, BigInt(accept.maxAmountRequired))} ${asset} via x402`, "done");
 
-    // 5. Pay the provider on-chain from Circuit's wallet.
-    await logEvent(job.id, "pay_provider", `Paying ${chosen.name} ${Number(chosen.price_cusd).toFixed(3)} cUSD on Celo…`, "running");
+    await logEvent(job.id, "pay_provider", `Paying ${chosen.name} ${Number(chosen.price_cusd).toFixed(3)} ${asset} on ${chain.toUpperCase()}…`, "running");
     let providerTx: Hex;
     try {
-      providerTx = await circuitSendCusd(chosen.wallet_address as Address, BigInt(accept.maxAmountRequired));
+      providerTx = await circuitSendAsset(chain, chosen.wallet_address as Address, BigInt(accept.maxAmountRequired));
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       await setJob(job.id, { status: "failed", error: `pay_failed: ${msg}` });
@@ -171,7 +181,6 @@ export const confirmPayment = createServerFn({ method: "POST" })
     await setJob(job.id, { provider_tx_hash: providerTx, circuit_fee_cusd: Number(job.user_pay_amount_cusd) - Number(chosen.price_cusd) });
     await logEvent(job.id, "pay_provider", `✓ Paid ${chosen.name}`, "done", { txHash: providerTx });
 
-    // 6. Re-request with payment proof.
     await setJob(job.id, { status: "provider_working" });
     await logEvent(job.id, "delivery", `${chosen.name} working on your request…`, "running");
     const paymentHeader = Buffer.from(JSON.stringify({ txHash: providerTx, from: getCircuitAddress() })).toString("base64");
@@ -196,7 +205,7 @@ export const confirmPayment = createServerFn({ method: "POST" })
     await logEvent(job.id, "delivery", `✓ ${chosen.name} delivered`, "done");
     await logEvent(job.id, "complete", "Procurement complete.", "done");
 
-    // 7. Submit ERC-8004 reputation feedback (best-effort).
+    // ERC-8004 reputation feedback (Celo registry, best-effort).
     try {
       const wallet = getCircuitWalletClient();
       const hash = await wallet.writeContract({
@@ -235,6 +244,25 @@ export const getJobsForWallet = createServerFn({ method: "GET" })
 
 export const listProviders = createServerFn({ method: "GET" }).handler(async () => {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data } = await supabaseAdmin.from("agent_registry").select("*").eq("active", true).order("category").order("reputation", { ascending: false });
+  const { data } = await supabaseAdmin.from("agent_registry").select("*").eq("active", true)
+    .order("category").order("reputation", { ascending: false });
   return { providers: data ?? [] };
+});
+
+export const listCategories = createServerFn({ method: "GET" }).handler(async () => {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data } = await supabaseAdmin.from("agent_registry").select("category, chain, price_cusd").eq("active", true);
+  const map = new Map<string, { category: string; chains: Set<string>; minPrice: number; count: number }>();
+  for (const row of data ?? []) {
+    const cur = map.get(row.category) ?? { category: row.category, chains: new Set<string>(), minPrice: Infinity, count: 0 };
+    cur.chains.add(row.chain);
+    cur.minPrice = Math.min(cur.minPrice, Number(row.price_cusd));
+    cur.count += 1;
+    map.set(row.category, cur);
+  }
+  return {
+    categories: Array.from(map.values()).map((c) => ({
+      category: c.category, chains: Array.from(c.chains), minPrice: c.minPrice, count: c.count,
+    })).sort((a, b) => a.category.localeCompare(b.category)),
+  };
 });

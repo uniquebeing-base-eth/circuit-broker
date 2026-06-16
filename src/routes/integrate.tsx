@@ -61,27 +61,50 @@ function ApiDocs() {
           <h2 className="font-semibold">Protocol summary</h2>
           <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-1">
             <li>Scheme: <span className="text-foreground font-mono">x402</span> (HTTP 402-based pay-per-call)</li>
-            <li>Network: <span className="text-foreground font-mono">celo</span> (chainId 42220)</li>
-            <li>Asset: <span className="text-foreground font-mono">cUSD</span> <span className="text-[10px]">0x765DE816845861e75A25fCA122bb6898B8B1282a</span></li>
-            <li><span className="font-mono">GET</span> returns the agent card (price, payTo, capabilities)</li>
+            <li>Networks: <span className="text-foreground font-mono">celo</span> (cUSD, 42220) · <span className="text-foreground font-mono">base</span> (USDC, 8453)</li>
+            <li><span className="font-mono">GET</span> returns the agent card (price, payTo, chain, capabilities)</li>
             <li><span className="font-mono">POST</span> w/o <span className="font-mono">X-PAYMENT</span> → 402 + payment requirements</li>
             <li><span className="font-mono">POST</span> w/ <span className="font-mono">X-PAYMENT</span> (base64 JSON <span className="font-mono">{`{txHash,from}`}</span>) → result</li>
           </ul>
         </section>
 
+        <section className="glass rounded-2xl p-5 space-y-3">
+          <h2 className="font-semibold">A2A discovery</h2>
+          <div className="text-xs text-muted-foreground">Agent card (A2A v0.3, includes every skill):</div>
+          <CopyBlock>{`GET ${origin}/.well-known/agent-card.json`}</CopyBlock>
+          <div className="text-xs text-muted-foreground">JSON-RPC (agent/getCard):</div>
+          <CopyBlock>{`POST ${origin}/api/a2a
+Content-Type: application/json
+
+{"jsonrpc":"2.0","id":1,"method":"agent/getCard"}`}</CopyBlock>
+        </section>
+
+        <section className="glass rounded-2xl p-5 space-y-3">
+          <h2 className="font-semibold">Public job activity API</h2>
+          <p className="text-xs text-muted-foreground">Any agent can read Circuit job timelines — status, txHash, provider, timestamps. No auth, CORS-open.</p>
+          <div className="text-xs text-muted-foreground">List recent jobs:</div>
+          <CopyBlock>{`GET ${origin}/api/public/jobs/?limit=25&status=completed&category=logo`}</CopyBlock>
+          <div className="text-xs text-muted-foreground">Single job with full timeline:</div>
+          <CopyBlock>{`GET ${origin}/api/public/jobs/{jobId}`}</CopyBlock>
+        </section>
+
         <section className="space-y-4">
-          <h2 className="font-semibold">Provider endpoints</h2>
-          <p className="text-xs text-muted-foreground">Register each URL as a service on ERC-8004 — Circuit will discover and hire them automatically.</p>
+          <h2 className="font-semibold">Provider endpoints ({providers.length})</h2>
+          <p className="text-xs text-muted-foreground">Register each URL on the ERC-8004 Identity Registry — Circuit will discover and hire them automatically.</p>
           {providers.map((p: any) => {
             const url = `${origin}${p.endpoint}?agent=${p.id}`;
             return (
               <div key={p.id} className="glass rounded-xl p-4 space-y-2">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <div className="font-semibold">{p.name} <span className="text-[10px] uppercase text-muted-foreground ml-1">{p.category}</span></div>
+                <div className="flex justify-between items-start gap-2">
+                  <div className="min-w-0">
+                    <div className="font-semibold">
+                      {p.name}
+                      <span className="text-[10px] uppercase text-muted-foreground ml-2">{p.category}</span>
+                      <span className="text-[9px] font-mono uppercase ml-2 rounded px-1.5 py-0.5 bg-secondary/50 text-muted-foreground">{p.chain ?? "celo"}</span>
+                    </div>
                     <div className="text-xs text-muted-foreground">{p.description}</div>
                   </div>
-                  <div className="font-mono text-xs text-right">{Number(p.price_cusd).toFixed(3)} cUSD</div>
+                  <div className="font-mono text-xs text-right shrink-0">{Number(p.price_cusd).toFixed(3)} {p.asset ?? "cUSD"}</div>
                 </div>
                 <div>
                   <div className="text-[10px] text-muted-foreground tracking-widest uppercase mt-2 mb-1">Agent card (A2A)</div>
@@ -103,7 +126,7 @@ function ApiDocs() {
         <section className="glass rounded-2xl p-5 space-y-3">
           <h2 className="font-semibold">Quick test</h2>
           <div className="text-xs text-muted-foreground">Probe any endpoint for its 402 payment requirements:</div>
-          <CopyBlock>{`curl -X POST '${origin}/api/public/agents/logo?agent=${providers[0]?.id ?? "<agent-id>"}' -H 'Content-Type: application/json' -d '{}'`}</CopyBlock>
+          <CopyBlock>{`curl -X POST '${providers[0] ? `${origin}${providers[0].endpoint}?agent=${providers[0].id}` : `${origin}/api/public/agents/logo?agent=<id>`}' -H 'Content-Type: application/json' -d '{}'`}</CopyBlock>
         </section>
       </main>
     </div>
