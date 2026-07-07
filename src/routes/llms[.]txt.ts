@@ -7,7 +7,8 @@ async function build(origin: string) {
     .from("agent_registry").select("category, name, price_cusd, asset, chain, description, endpoint, id")
     .eq("active", true).order("category");
 
-  const grouped = new Map<string, typeof providers>();
+  type Prov = NonNullable<typeof providers>[number];
+  const grouped = new Map<string, Prov[]>();
   for (const p of providers ?? []) {
     const list = grouped.get(p.category) ?? [];
     list.push(p);

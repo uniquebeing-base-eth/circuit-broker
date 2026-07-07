@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProcureRouteImport } from './routes/procure'
 import { Route as OpenapiDotjsonRouteImport } from './routes/openapi[.]json'
+import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
 import { Route as IntegrateRouteImport } from './routes/integrate'
 import { Route as HealthRouteImport } from './routes/health'
 import { Route as AgentsRouteImport } from './routes/agents'
@@ -35,6 +36,11 @@ const ProcureRoute = ProcureRouteImport.update({
 const OpenapiDotjsonRoute = OpenapiDotjsonRouteImport.update({
   id: '/openapi.json',
   path: '/openapi.json',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LlmsDottxtRoute = LlmsDottxtRouteImport.update({
+  id: '/llms.txt',
+  path: '/llms.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IntegrateRoute = IntegrateRouteImport.update({
@@ -122,6 +128,7 @@ export interface FileRoutesByFullPath {
   '/agents': typeof AgentsRoute
   '/health': typeof HealthRoute
   '/integrate': typeof IntegrateRoute
+  '/llms.txt': typeof LlmsDottxtRoute
   '/openapi.json': typeof OpenapiDotjsonRoute
   '/procure': typeof ProcureRoute
   '/.well-known/agent-card.json': typeof DotwellKnownAgentCardDotjsonRoute
@@ -141,6 +148,7 @@ export interface FileRoutesByTo {
   '/agents': typeof AgentsRoute
   '/health': typeof HealthRoute
   '/integrate': typeof IntegrateRoute
+  '/llms.txt': typeof LlmsDottxtRoute
   '/openapi.json': typeof OpenapiDotjsonRoute
   '/procure': typeof ProcureRoute
   '/.well-known/agent-card.json': typeof DotwellKnownAgentCardDotjsonRoute
@@ -161,6 +169,7 @@ export interface FileRoutesById {
   '/agents': typeof AgentsRoute
   '/health': typeof HealthRoute
   '/integrate': typeof IntegrateRoute
+  '/llms.txt': typeof LlmsDottxtRoute
   '/openapi.json': typeof OpenapiDotjsonRoute
   '/procure': typeof ProcureRoute
   '/.well-known/agent-card.json': typeof DotwellKnownAgentCardDotjsonRoute
@@ -182,6 +191,7 @@ export interface FileRouteTypes {
     | '/agents'
     | '/health'
     | '/integrate'
+    | '/llms.txt'
     | '/openapi.json'
     | '/procure'
     | '/.well-known/agent-card.json'
@@ -201,6 +211,7 @@ export interface FileRouteTypes {
     | '/agents'
     | '/health'
     | '/integrate'
+    | '/llms.txt'
     | '/openapi.json'
     | '/procure'
     | '/.well-known/agent-card.json'
@@ -220,6 +231,7 @@ export interface FileRouteTypes {
     | '/agents'
     | '/health'
     | '/integrate'
+    | '/llms.txt'
     | '/openapi.json'
     | '/procure'
     | '/.well-known/agent-card.json'
@@ -240,6 +252,7 @@ export interface RootRouteChildren {
   AgentsRoute: typeof AgentsRoute
   HealthRoute: typeof HealthRoute
   IntegrateRoute: typeof IntegrateRoute
+  LlmsDottxtRoute: typeof LlmsDottxtRoute
   OpenapiDotjsonRoute: typeof OpenapiDotjsonRoute
   ProcureRoute: typeof ProcureRoute
   DotwellKnownAgentCardDotjsonRoute: typeof DotwellKnownAgentCardDotjsonRoute
@@ -268,6 +281,13 @@ declare module '@tanstack/react-router' {
       path: '/openapi.json'
       fullPath: '/openapi.json'
       preLoaderRoute: typeof OpenapiDotjsonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/llms.txt': {
+      id: '/llms.txt'
+      path: '/llms.txt'
+      fullPath: '/llms.txt'
+      preLoaderRoute: typeof LlmsDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/integrate': {
@@ -384,6 +404,7 @@ const rootRouteChildren: RootRouteChildren = {
   AgentsRoute: AgentsRoute,
   HealthRoute: HealthRoute,
   IntegrateRoute: IntegrateRoute,
+  LlmsDottxtRoute: LlmsDottxtRoute,
   OpenapiDotjsonRoute: OpenapiDotjsonRoute,
   ProcureRoute: ProcureRoute,
   DotwellKnownAgentCardDotjsonRoute: DotwellKnownAgentCardDotjsonRoute,
