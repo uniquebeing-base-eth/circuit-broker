@@ -16,6 +16,7 @@ import { Route as AgentsRouteImport } from './routes/agents'
 import { Route as AgentCardDotjsonRouteImport } from './routes/agent-card[.]json'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiA2aRouteImport } from './routes/api/a2a'
+import { Route as DotwellKnownAgentsDotjsonRouteImport } from './routes/[.]well-known.agents[.]json'
 import { Route as DotwellKnownAgentDotjsonRouteImport } from './routes/[.]well-known.agent[.]json'
 import { Route as DotwellKnownAgentCardDotjsonRouteImport } from './routes/[.]well-known.agent-card[.]json'
 import { Route as ApiPublicJobsIndexRouteImport } from './routes/api/public/jobs/index'
@@ -60,6 +61,12 @@ const ApiA2aRoute = ApiA2aRouteImport.update({
   path: '/api/a2a',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DotwellKnownAgentsDotjsonRoute =
+  DotwellKnownAgentsDotjsonRouteImport.update({
+    id: '/.well-known/agents.json',
+    path: '/.well-known/agents.json',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const DotwellKnownAgentDotjsonRoute =
   DotwellKnownAgentDotjsonRouteImport.update({
     id: '/.well-known/agent.json',
@@ -112,6 +119,7 @@ export interface FileRoutesByFullPath {
   '/procure': typeof ProcureRoute
   '/.well-known/agent-card.json': typeof DotwellKnownAgentCardDotjsonRoute
   '/.well-known/agent.json': typeof DotwellKnownAgentDotjsonRoute
+  '/.well-known/agents.json': typeof DotwellKnownAgentsDotjsonRoute
   '/api/a2a': typeof ApiA2aRoute
   '/api/public/agents/$category': typeof ApiPublicAgentsCategoryRoute
   '/api/public/agents/image': typeof ApiPublicAgentsImageRoute
@@ -129,6 +137,7 @@ export interface FileRoutesByTo {
   '/procure': typeof ProcureRoute
   '/.well-known/agent-card.json': typeof DotwellKnownAgentCardDotjsonRoute
   '/.well-known/agent.json': typeof DotwellKnownAgentDotjsonRoute
+  '/.well-known/agents.json': typeof DotwellKnownAgentsDotjsonRoute
   '/api/a2a': typeof ApiA2aRoute
   '/api/public/agents/$category': typeof ApiPublicAgentsCategoryRoute
   '/api/public/agents/image': typeof ApiPublicAgentsImageRoute
@@ -147,6 +156,7 @@ export interface FileRoutesById {
   '/procure': typeof ProcureRoute
   '/.well-known/agent-card.json': typeof DotwellKnownAgentCardDotjsonRoute
   '/.well-known/agent.json': typeof DotwellKnownAgentDotjsonRoute
+  '/.well-known/agents.json': typeof DotwellKnownAgentsDotjsonRoute
   '/api/a2a': typeof ApiA2aRoute
   '/api/public/agents/$category': typeof ApiPublicAgentsCategoryRoute
   '/api/public/agents/image': typeof ApiPublicAgentsImageRoute
@@ -166,6 +176,7 @@ export interface FileRouteTypes {
     | '/procure'
     | '/.well-known/agent-card.json'
     | '/.well-known/agent.json'
+    | '/.well-known/agents.json'
     | '/api/a2a'
     | '/api/public/agents/$category'
     | '/api/public/agents/image'
@@ -183,6 +194,7 @@ export interface FileRouteTypes {
     | '/procure'
     | '/.well-known/agent-card.json'
     | '/.well-known/agent.json'
+    | '/.well-known/agents.json'
     | '/api/a2a'
     | '/api/public/agents/$category'
     | '/api/public/agents/image'
@@ -200,6 +212,7 @@ export interface FileRouteTypes {
     | '/procure'
     | '/.well-known/agent-card.json'
     | '/.well-known/agent.json'
+    | '/.well-known/agents.json'
     | '/api/a2a'
     | '/api/public/agents/$category'
     | '/api/public/agents/image'
@@ -218,6 +231,7 @@ export interface RootRouteChildren {
   ProcureRoute: typeof ProcureRoute
   DotwellKnownAgentCardDotjsonRoute: typeof DotwellKnownAgentCardDotjsonRoute
   DotwellKnownAgentDotjsonRoute: typeof DotwellKnownAgentDotjsonRoute
+  DotwellKnownAgentsDotjsonRoute: typeof DotwellKnownAgentsDotjsonRoute
   ApiA2aRoute: typeof ApiA2aRoute
   ApiPublicAgentsCategoryRoute: typeof ApiPublicAgentsCategoryRoute
   ApiPublicAgentsImageRoute: typeof ApiPublicAgentsImageRoute
@@ -276,6 +290,13 @@ declare module '@tanstack/react-router' {
       path: '/api/a2a'
       fullPath: '/api/a2a'
       preLoaderRoute: typeof ApiA2aRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.well-known/agents.json': {
+      id: '/.well-known/agents.json'
+      path: '/.well-known/agents.json'
+      fullPath: '/.well-known/agents.json'
+      preLoaderRoute: typeof DotwellKnownAgentsDotjsonRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.well-known/agent.json': {
@@ -346,6 +367,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProcureRoute: ProcureRoute,
   DotwellKnownAgentCardDotjsonRoute: DotwellKnownAgentCardDotjsonRoute,
   DotwellKnownAgentDotjsonRoute: DotwellKnownAgentDotjsonRoute,
+  DotwellKnownAgentsDotjsonRoute: DotwellKnownAgentsDotjsonRoute,
   ApiA2aRoute: ApiA2aRoute,
   ApiPublicAgentsCategoryRoute: ApiPublicAgentsCategoryRoute,
   ApiPublicAgentsImageRoute: ApiPublicAgentsImageRoute,
