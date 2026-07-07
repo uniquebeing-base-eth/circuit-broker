@@ -9,13 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ProcureRouteImport } from './routes/procure'
+import { Route as OpenapiDotjsonRouteImport } from './routes/openapi[.]json'
+import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
 import { Route as IntegrateRouteImport } from './routes/integrate'
 import { Route as HealthRouteImport } from './routes/health'
 import { Route as AgentsRouteImport } from './routes/agents'
 import { Route as AgentCardDotjsonRouteImport } from './routes/agent-card[.]json'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiA2aRouteImport } from './routes/api/a2a'
+import { Route as DotwellKnownAgentsDotjsonRouteImport } from './routes/[.]well-known.agents[.]json'
 import { Route as DotwellKnownAgentDotjsonRouteImport } from './routes/[.]well-known.agent[.]json'
 import { Route as DotwellKnownAgentCardDotjsonRouteImport } from './routes/[.]well-known.agent-card[.]json'
 import { Route as ApiPublicJobsIndexRouteImport } from './routes/api/public/jobs/index'
@@ -25,9 +29,24 @@ import { Route as ApiPublicAgentsLogoRouteImport } from './routes/api/public/age
 import { Route as ApiPublicAgentsImageRouteImport } from './routes/api/public/agents/image'
 import { Route as ApiPublicAgentsCategoryRouteImport } from './routes/api/public/agents/$category'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProcureRoute = ProcureRouteImport.update({
   id: '/procure',
   path: '/procure',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OpenapiDotjsonRoute = OpenapiDotjsonRouteImport.update({
+  id: '/openapi.json',
+  path: '/openapi.json',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LlmsDottxtRoute = LlmsDottxtRouteImport.update({
+  id: '/llms.txt',
+  path: '/llms.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IntegrateRoute = IntegrateRouteImport.update({
@@ -60,6 +79,12 @@ const ApiA2aRoute = ApiA2aRouteImport.update({
   path: '/api/a2a',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DotwellKnownAgentsDotjsonRoute =
+  DotwellKnownAgentsDotjsonRouteImport.update({
+    id: '/.well-known/agents.json',
+    path: '/.well-known/agents.json',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const DotwellKnownAgentDotjsonRoute =
   DotwellKnownAgentDotjsonRouteImport.update({
     id: '/.well-known/agent.json',
@@ -109,9 +134,13 @@ export interface FileRoutesByFullPath {
   '/agents': typeof AgentsRoute
   '/health': typeof HealthRoute
   '/integrate': typeof IntegrateRoute
+  '/llms.txt': typeof LlmsDottxtRoute
+  '/openapi.json': typeof OpenapiDotjsonRoute
   '/procure': typeof ProcureRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/.well-known/agent-card.json': typeof DotwellKnownAgentCardDotjsonRoute
   '/.well-known/agent.json': typeof DotwellKnownAgentDotjsonRoute
+  '/.well-known/agents.json': typeof DotwellKnownAgentsDotjsonRoute
   '/api/a2a': typeof ApiA2aRoute
   '/api/public/agents/$category': typeof ApiPublicAgentsCategoryRoute
   '/api/public/agents/image': typeof ApiPublicAgentsImageRoute
@@ -126,9 +155,13 @@ export interface FileRoutesByTo {
   '/agents': typeof AgentsRoute
   '/health': typeof HealthRoute
   '/integrate': typeof IntegrateRoute
+  '/llms.txt': typeof LlmsDottxtRoute
+  '/openapi.json': typeof OpenapiDotjsonRoute
   '/procure': typeof ProcureRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/.well-known/agent-card.json': typeof DotwellKnownAgentCardDotjsonRoute
   '/.well-known/agent.json': typeof DotwellKnownAgentDotjsonRoute
+  '/.well-known/agents.json': typeof DotwellKnownAgentsDotjsonRoute
   '/api/a2a': typeof ApiA2aRoute
   '/api/public/agents/$category': typeof ApiPublicAgentsCategoryRoute
   '/api/public/agents/image': typeof ApiPublicAgentsImageRoute
@@ -144,9 +177,13 @@ export interface FileRoutesById {
   '/agents': typeof AgentsRoute
   '/health': typeof HealthRoute
   '/integrate': typeof IntegrateRoute
+  '/llms.txt': typeof LlmsDottxtRoute
+  '/openapi.json': typeof OpenapiDotjsonRoute
   '/procure': typeof ProcureRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/.well-known/agent-card.json': typeof DotwellKnownAgentCardDotjsonRoute
   '/.well-known/agent.json': typeof DotwellKnownAgentDotjsonRoute
+  '/.well-known/agents.json': typeof DotwellKnownAgentsDotjsonRoute
   '/api/a2a': typeof ApiA2aRoute
   '/api/public/agents/$category': typeof ApiPublicAgentsCategoryRoute
   '/api/public/agents/image': typeof ApiPublicAgentsImageRoute
@@ -163,9 +200,13 @@ export interface FileRouteTypes {
     | '/agents'
     | '/health'
     | '/integrate'
+    | '/llms.txt'
+    | '/openapi.json'
     | '/procure'
+    | '/sitemap.xml'
     | '/.well-known/agent-card.json'
     | '/.well-known/agent.json'
+    | '/.well-known/agents.json'
     | '/api/a2a'
     | '/api/public/agents/$category'
     | '/api/public/agents/image'
@@ -180,9 +221,13 @@ export interface FileRouteTypes {
     | '/agents'
     | '/health'
     | '/integrate'
+    | '/llms.txt'
+    | '/openapi.json'
     | '/procure'
+    | '/sitemap.xml'
     | '/.well-known/agent-card.json'
     | '/.well-known/agent.json'
+    | '/.well-known/agents.json'
     | '/api/a2a'
     | '/api/public/agents/$category'
     | '/api/public/agents/image'
@@ -197,9 +242,13 @@ export interface FileRouteTypes {
     | '/agents'
     | '/health'
     | '/integrate'
+    | '/llms.txt'
+    | '/openapi.json'
     | '/procure'
+    | '/sitemap.xml'
     | '/.well-known/agent-card.json'
     | '/.well-known/agent.json'
+    | '/.well-known/agents.json'
     | '/api/a2a'
     | '/api/public/agents/$category'
     | '/api/public/agents/image'
@@ -215,9 +264,13 @@ export interface RootRouteChildren {
   AgentsRoute: typeof AgentsRoute
   HealthRoute: typeof HealthRoute
   IntegrateRoute: typeof IntegrateRoute
+  LlmsDottxtRoute: typeof LlmsDottxtRoute
+  OpenapiDotjsonRoute: typeof OpenapiDotjsonRoute
   ProcureRoute: typeof ProcureRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   DotwellKnownAgentCardDotjsonRoute: typeof DotwellKnownAgentCardDotjsonRoute
   DotwellKnownAgentDotjsonRoute: typeof DotwellKnownAgentDotjsonRoute
+  DotwellKnownAgentsDotjsonRoute: typeof DotwellKnownAgentsDotjsonRoute
   ApiA2aRoute: typeof ApiA2aRoute
   ApiPublicAgentsCategoryRoute: typeof ApiPublicAgentsCategoryRoute
   ApiPublicAgentsImageRoute: typeof ApiPublicAgentsImageRoute
@@ -229,11 +282,32 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/procure': {
       id: '/procure'
       path: '/procure'
       fullPath: '/procure'
       preLoaderRoute: typeof ProcureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/openapi.json': {
+      id: '/openapi.json'
+      path: '/openapi.json'
+      fullPath: '/openapi.json'
+      preLoaderRoute: typeof OpenapiDotjsonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/llms.txt': {
+      id: '/llms.txt'
+      path: '/llms.txt'
+      fullPath: '/llms.txt'
+      preLoaderRoute: typeof LlmsDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/integrate': {
@@ -276,6 +350,13 @@ declare module '@tanstack/react-router' {
       path: '/api/a2a'
       fullPath: '/api/a2a'
       preLoaderRoute: typeof ApiA2aRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.well-known/agents.json': {
+      id: '/.well-known/agents.json'
+      path: '/.well-known/agents.json'
+      fullPath: '/.well-known/agents.json'
+      preLoaderRoute: typeof DotwellKnownAgentsDotjsonRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.well-known/agent.json': {
@@ -343,9 +424,13 @@ const rootRouteChildren: RootRouteChildren = {
   AgentsRoute: AgentsRoute,
   HealthRoute: HealthRoute,
   IntegrateRoute: IntegrateRoute,
+  LlmsDottxtRoute: LlmsDottxtRoute,
+  OpenapiDotjsonRoute: OpenapiDotjsonRoute,
   ProcureRoute: ProcureRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   DotwellKnownAgentCardDotjsonRoute: DotwellKnownAgentCardDotjsonRoute,
   DotwellKnownAgentDotjsonRoute: DotwellKnownAgentDotjsonRoute,
+  DotwellKnownAgentsDotjsonRoute: DotwellKnownAgentsDotjsonRoute,
   ApiA2aRoute: ApiA2aRoute,
   ApiPublicAgentsCategoryRoute: ApiPublicAgentsCategoryRoute,
   ApiPublicAgentsImageRoute: ApiPublicAgentsImageRoute,
