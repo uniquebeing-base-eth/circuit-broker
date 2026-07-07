@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ProcureRouteImport } from './routes/procure'
 import { Route as OpenapiDotjsonRouteImport } from './routes/openapi[.]json'
 import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
@@ -28,6 +29,11 @@ import { Route as ApiPublicAgentsLogoRouteImport } from './routes/api/public/age
 import { Route as ApiPublicAgentsImageRouteImport } from './routes/api/public/agents/image'
 import { Route as ApiPublicAgentsCategoryRouteImport } from './routes/api/public/agents/$category'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProcureRoute = ProcureRouteImport.update({
   id: '/procure',
   path: '/procure',
@@ -131,6 +137,7 @@ export interface FileRoutesByFullPath {
   '/llms.txt': typeof LlmsDottxtRoute
   '/openapi.json': typeof OpenapiDotjsonRoute
   '/procure': typeof ProcureRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/.well-known/agent-card.json': typeof DotwellKnownAgentCardDotjsonRoute
   '/.well-known/agent.json': typeof DotwellKnownAgentDotjsonRoute
   '/.well-known/agents.json': typeof DotwellKnownAgentsDotjsonRoute
@@ -151,6 +158,7 @@ export interface FileRoutesByTo {
   '/llms.txt': typeof LlmsDottxtRoute
   '/openapi.json': typeof OpenapiDotjsonRoute
   '/procure': typeof ProcureRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/.well-known/agent-card.json': typeof DotwellKnownAgentCardDotjsonRoute
   '/.well-known/agent.json': typeof DotwellKnownAgentDotjsonRoute
   '/.well-known/agents.json': typeof DotwellKnownAgentsDotjsonRoute
@@ -172,6 +180,7 @@ export interface FileRoutesById {
   '/llms.txt': typeof LlmsDottxtRoute
   '/openapi.json': typeof OpenapiDotjsonRoute
   '/procure': typeof ProcureRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/.well-known/agent-card.json': typeof DotwellKnownAgentCardDotjsonRoute
   '/.well-known/agent.json': typeof DotwellKnownAgentDotjsonRoute
   '/.well-known/agents.json': typeof DotwellKnownAgentsDotjsonRoute
@@ -194,6 +203,7 @@ export interface FileRouteTypes {
     | '/llms.txt'
     | '/openapi.json'
     | '/procure'
+    | '/sitemap.xml'
     | '/.well-known/agent-card.json'
     | '/.well-known/agent.json'
     | '/.well-known/agents.json'
@@ -214,6 +224,7 @@ export interface FileRouteTypes {
     | '/llms.txt'
     | '/openapi.json'
     | '/procure'
+    | '/sitemap.xml'
     | '/.well-known/agent-card.json'
     | '/.well-known/agent.json'
     | '/.well-known/agents.json'
@@ -234,6 +245,7 @@ export interface FileRouteTypes {
     | '/llms.txt'
     | '/openapi.json'
     | '/procure'
+    | '/sitemap.xml'
     | '/.well-known/agent-card.json'
     | '/.well-known/agent.json'
     | '/.well-known/agents.json'
@@ -255,6 +267,7 @@ export interface RootRouteChildren {
   LlmsDottxtRoute: typeof LlmsDottxtRoute
   OpenapiDotjsonRoute: typeof OpenapiDotjsonRoute
   ProcureRoute: typeof ProcureRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   DotwellKnownAgentCardDotjsonRoute: typeof DotwellKnownAgentCardDotjsonRoute
   DotwellKnownAgentDotjsonRoute: typeof DotwellKnownAgentDotjsonRoute
   DotwellKnownAgentsDotjsonRoute: typeof DotwellKnownAgentsDotjsonRoute
@@ -269,6 +282,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/procure': {
       id: '/procure'
       path: '/procure'
@@ -407,6 +427,7 @@ const rootRouteChildren: RootRouteChildren = {
   LlmsDottxtRoute: LlmsDottxtRoute,
   OpenapiDotjsonRoute: OpenapiDotjsonRoute,
   ProcureRoute: ProcureRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   DotwellKnownAgentCardDotjsonRoute: DotwellKnownAgentCardDotjsonRoute,
   DotwellKnownAgentDotjsonRoute: DotwellKnownAgentDotjsonRoute,
   DotwellKnownAgentsDotjsonRoute: DotwellKnownAgentsDotjsonRoute,
