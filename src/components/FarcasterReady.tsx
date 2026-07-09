@@ -1,21 +1,23 @@
 import { useEffect } from "react";
 
-// Signal to the Farcaster Mini App host that the app is ready.
-// The SDK pulls in Node/browser-only deps (rpc-websockets) that don't build
-// under the Cloudflare workerd SSR environment, so we load it via a runtime
-// dynamic import that Vite/Rolldown cannot statically analyze.
+// Signal to the Farcaster Mini App host that the app is ready so the splash
+// screen dismisses. We load the SDK from esm.sh at runtime because the npm
+// package pulls in Node-only deps (rpc-websockets) that don't build under the
+// Cloudflare workerd SSR bundle, and a bare-specifier dynamic import can't be
+// resolved by the browser at runtime.
+const SDK_URL = "https://esm.sh/@farcaster/miniapp-sdk@0.3.0";
+
 export function FarcasterReady() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     let cancelled = false;
     (async () => {
       try {
-        const modName = "@farcaster/miniapp-sdk";
-        const mod: any = await import(/* @vite-ignore */ modName);
+        const mod: any = await import(/* @vite-ignore */ SDK_URL);
         if (cancelled) return;
         await mod.sdk?.actions?.ready?.();
-      } catch {
-        // Not running inside a Farcaster host — safe to ignore.
+      } catch (err) {
+        console.warn("[FarcasterReady] sdk.actions.ready failed", err);
       }
     })();
     return () => {
@@ -24,4 +26,3 @@ export function FarcasterReady() {
   }, []);
   return null;
 }
-
