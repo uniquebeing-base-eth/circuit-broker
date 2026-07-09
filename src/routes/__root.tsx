@@ -12,8 +12,38 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import logoAsset from "../assets/circuit-logo.asset.json";
+import { FarcasterReady } from "../components/FarcasterReady";
 
 const LOGO_URL = logoAsset.url;
+const SITE_URL = "https://circuit-broker.lovable.app";
+const MINIAPP_EMBED = JSON.stringify({
+  version: "1",
+  imageUrl: `${SITE_URL}/image.png`,
+  button: {
+    title: "Launch Circuit",
+    action: {
+      type: "launch_miniapp",
+      url: SITE_URL,
+      name: "Circuit",
+      splashImageUrl: `${SITE_URL}/splash.png`,
+      splashBackgroundColor: "#0a1628",
+    },
+  },
+});
+const FRAME_EMBED = JSON.stringify({
+  version: "1",
+  imageUrl: `${SITE_URL}/image.png`,
+  button: {
+    title: "Launch Circuit",
+    action: {
+      type: "launch_frame",
+      url: SITE_URL,
+      name: "Circuit",
+      splashImageUrl: `${SITE_URL}/splash.png`,
+      splashBackgroundColor: "#0a1628",
+    },
+  },
+});
 
 function NotFoundComponent() {
   return (
@@ -80,8 +110,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:title", content: "Circuit — Autonomous Procurement Agent on Celo" },
       { name: "twitter:description", content: "Tell Circuit what you need. Circuit finds, pays, and delivers — autonomously, on Celo, in cUSD." },
       { name: "twitter:image", content: LOGO_URL },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/7e29579a-8ae8-40dc-9d58-01d7003489c7" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/7e29579a-8ae8-40dc-9d58-01d7003489c7" },
+      { property: "og:image", content: `${SITE_URL}/image.png` },
+      { name: "twitter:image", content: `${SITE_URL}/image.png` },
+      { name: "fc:miniapp", content: MINIAPP_EMBED },
+      { name: "fc:frame", content: FRAME_EMBED },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -113,6 +145,7 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
+      <FarcasterReady />
       <Outlet />
     </QueryClientProvider>
   );

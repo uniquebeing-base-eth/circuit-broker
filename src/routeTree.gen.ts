@@ -19,6 +19,7 @@ import { Route as AgentsRouteImport } from './routes/agents'
 import { Route as AgentCardDotjsonRouteImport } from './routes/agent-card[.]json'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiA2aRouteImport } from './routes/api/a2a'
+import { Route as DotwellKnownFarcasterDotjsonRouteImport } from './routes/[.]well-known.farcaster[.]json'
 import { Route as DotwellKnownAgentsDotjsonRouteImport } from './routes/[.]well-known.agents[.]json'
 import { Route as DotwellKnownAgentDotjsonRouteImport } from './routes/[.]well-known.agent[.]json'
 import { Route as DotwellKnownAgentCardDotjsonRouteImport } from './routes/[.]well-known.agent-card[.]json'
@@ -79,6 +80,12 @@ const ApiA2aRoute = ApiA2aRouteImport.update({
   path: '/api/a2a',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DotwellKnownFarcasterDotjsonRoute =
+  DotwellKnownFarcasterDotjsonRouteImport.update({
+    id: '/.well-known/farcaster.json',
+    path: '/.well-known/farcaster.json',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const DotwellKnownAgentsDotjsonRoute =
   DotwellKnownAgentsDotjsonRouteImport.update({
     id: '/.well-known/agents.json',
@@ -141,6 +148,7 @@ export interface FileRoutesByFullPath {
   '/.well-known/agent-card.json': typeof DotwellKnownAgentCardDotjsonRoute
   '/.well-known/agent.json': typeof DotwellKnownAgentDotjsonRoute
   '/.well-known/agents.json': typeof DotwellKnownAgentsDotjsonRoute
+  '/.well-known/farcaster.json': typeof DotwellKnownFarcasterDotjsonRoute
   '/api/a2a': typeof ApiA2aRoute
   '/api/public/agents/$category': typeof ApiPublicAgentsCategoryRoute
   '/api/public/agents/image': typeof ApiPublicAgentsImageRoute
@@ -162,6 +170,7 @@ export interface FileRoutesByTo {
   '/.well-known/agent-card.json': typeof DotwellKnownAgentCardDotjsonRoute
   '/.well-known/agent.json': typeof DotwellKnownAgentDotjsonRoute
   '/.well-known/agents.json': typeof DotwellKnownAgentsDotjsonRoute
+  '/.well-known/farcaster.json': typeof DotwellKnownFarcasterDotjsonRoute
   '/api/a2a': typeof ApiA2aRoute
   '/api/public/agents/$category': typeof ApiPublicAgentsCategoryRoute
   '/api/public/agents/image': typeof ApiPublicAgentsImageRoute
@@ -184,6 +193,7 @@ export interface FileRoutesById {
   '/.well-known/agent-card.json': typeof DotwellKnownAgentCardDotjsonRoute
   '/.well-known/agent.json': typeof DotwellKnownAgentDotjsonRoute
   '/.well-known/agents.json': typeof DotwellKnownAgentsDotjsonRoute
+  '/.well-known/farcaster.json': typeof DotwellKnownFarcasterDotjsonRoute
   '/api/a2a': typeof ApiA2aRoute
   '/api/public/agents/$category': typeof ApiPublicAgentsCategoryRoute
   '/api/public/agents/image': typeof ApiPublicAgentsImageRoute
@@ -207,6 +217,7 @@ export interface FileRouteTypes {
     | '/.well-known/agent-card.json'
     | '/.well-known/agent.json'
     | '/.well-known/agents.json'
+    | '/.well-known/farcaster.json'
     | '/api/a2a'
     | '/api/public/agents/$category'
     | '/api/public/agents/image'
@@ -228,6 +239,7 @@ export interface FileRouteTypes {
     | '/.well-known/agent-card.json'
     | '/.well-known/agent.json'
     | '/.well-known/agents.json'
+    | '/.well-known/farcaster.json'
     | '/api/a2a'
     | '/api/public/agents/$category'
     | '/api/public/agents/image'
@@ -249,6 +261,7 @@ export interface FileRouteTypes {
     | '/.well-known/agent-card.json'
     | '/.well-known/agent.json'
     | '/.well-known/agents.json'
+    | '/.well-known/farcaster.json'
     | '/api/a2a'
     | '/api/public/agents/$category'
     | '/api/public/agents/image'
@@ -271,6 +284,7 @@ export interface RootRouteChildren {
   DotwellKnownAgentCardDotjsonRoute: typeof DotwellKnownAgentCardDotjsonRoute
   DotwellKnownAgentDotjsonRoute: typeof DotwellKnownAgentDotjsonRoute
   DotwellKnownAgentsDotjsonRoute: typeof DotwellKnownAgentsDotjsonRoute
+  DotwellKnownFarcasterDotjsonRoute: typeof DotwellKnownFarcasterDotjsonRoute
   ApiA2aRoute: typeof ApiA2aRoute
   ApiPublicAgentsCategoryRoute: typeof ApiPublicAgentsCategoryRoute
   ApiPublicAgentsImageRoute: typeof ApiPublicAgentsImageRoute
@@ -352,6 +366,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiA2aRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/.well-known/farcaster.json': {
+      id: '/.well-known/farcaster.json'
+      path: '/.well-known/farcaster.json'
+      fullPath: '/.well-known/farcaster.json'
+      preLoaderRoute: typeof DotwellKnownFarcasterDotjsonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/.well-known/agents.json': {
       id: '/.well-known/agents.json'
       path: '/.well-known/agents.json'
@@ -431,6 +452,7 @@ const rootRouteChildren: RootRouteChildren = {
   DotwellKnownAgentCardDotjsonRoute: DotwellKnownAgentCardDotjsonRoute,
   DotwellKnownAgentDotjsonRoute: DotwellKnownAgentDotjsonRoute,
   DotwellKnownAgentsDotjsonRoute: DotwellKnownAgentsDotjsonRoute,
+  DotwellKnownFarcasterDotjsonRoute: DotwellKnownFarcasterDotjsonRoute,
   ApiA2aRoute: ApiA2aRoute,
   ApiPublicAgentsCategoryRoute: ApiPublicAgentsCategoryRoute,
   ApiPublicAgentsImageRoute: ApiPublicAgentsImageRoute,
